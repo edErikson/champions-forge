@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';">
     <meta name="theme-color" content="#1a73e8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1587,9 +1589,20 @@
                         text = `🏆 Win: ${safeNote.textContent}`;
                     }
 
+                    // ✅ SECURITY FIX: Separate timestamp and text to prevent XSS
                     const contentDiv = document.createElement('div');
                     contentDiv.style.flex = '1';
-                    contentDiv.innerHTML = `<b>${new Date(e.time).toLocaleString()}</b> — ${text}`;
+
+                    const timeStamp = document.createElement('b');
+                    timeStamp.textContent = new Date(e.time).toLocaleString();
+                    contentDiv.appendChild(timeStamp);
+
+                    const separator = document.createTextNode(' — ');
+                    contentDiv.appendChild(separator);
+
+                    const textNode = document.createElement('span');
+                    textNode.textContent = text; // Safe: uses textContent for user data
+                    contentDiv.appendChild(textNode);
 
                     const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'entry-delete';
@@ -1714,7 +1727,16 @@
                     if (window.location.protocol === 'file:') {
                         container.innerHTML = '<div style="padding:40px;"><div style="text-align:center; color:var(--warning); margin-bottom:20px;"><div style="font-size:48px; margin-bottom:12px;">⚠️</div><h3>Local File System Detected</h3></div><p style="line-height:1.8; color:var(--text-dim);">The Info pages cannot load when opening index.html directly from your file system due to browser security restrictions.</p><p style="line-height:1.8; color:var(--text-dim); margin-top:16px;"><strong>To test locally:</strong></p><ul style="line-height:1.8; margin-top:8px;"><li>Use a local web server (Python: <code>python -m http.server 8000</code>)</li><li>Or deploy to GitHub Pages where it works perfectly</li><li>Or use VS Code Live Server extension</li></ul><p style="line-height:1.8; color:var(--success); margin-top:20px; padding:16px; background:var(--bg-light); border-radius:8px; border-left:4px solid var(--success);"><strong>✅ On GitHub Pages:</strong> All content loads dynamically and works perfectly!</p></div>';
                     } else {
-                        container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--danger);"><div style="font-size:24px; margin-bottom:12px;">⚠️</div>Failed to load content. Please try again.<br><small style="color:var(--text-dim); margin-top:12px; display:block;">Error: ' + err.message + '</small></div>';
+                        // ✅ SECURITY FIX: Use createElement to prevent XSS
+                        const errorDiv = document.createElement('div');
+                        errorDiv.style.cssText = 'text-align:center; padding:40px; color:var(--danger);';
+                        errorDiv.innerHTML = '<div style="font-size:24px; margin-bottom:12px;">⚠️</div>Failed to load content. Please try again.<br>';
+                        const errorMsg = document.createElement('small');
+                        errorMsg.style.cssText = 'color:var(--text-dim); margin-top:12px; display:block;';
+                        errorMsg.textContent = 'Error: ' + err.message; // Safe: uses textContent
+                        errorDiv.appendChild(errorMsg);
+                        container.innerHTML = '';
+                        container.appendChild(errorDiv);
                     }
                 }
             }
