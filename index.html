@@ -438,7 +438,7 @@
         <button class="tab-btn" data-tab="wins">Wins</button>
         <button class="tab-btn" data-tab="hist">History</button>
         <button class="tab-btn" data-tab="settings">Settings</button>
-        <button class="tab-btn" data-tab="about">About</button>
+        <button class="tab-btn" data-tab="info" style="margin-left:auto;">ℹ️ Info</button>
     </div>
 
     <!-- DASHBOARD -->
@@ -620,102 +620,30 @@
         </div>
     </div>
 
-    <!-- ABOUT -->
-    <div id="about" class="page" style="display:none;">
-        <div class="card" style="text-align:center;">
-            <h1 style="margin:0; font-size:36px;">🏆 CHAMPION'S FORGE</h1>
-            <p style="color:var(--text-dim); margin:12px 0; font-size:18px;">Version 9.1</p>
-            <p style="color:var(--text); max-width:600px; margin:20px auto; line-height:1.8;">
-                A powerful habit tracker, focus timer, and achievement logger designed to help you build better habits
-                and track your progress.
-            </p>
-        </div>
-
+    <!-- INFO PAGE (DYNAMIC CONTENT) -->
+    <div id="info" class="page" style="display:none;">
         <div class="card">
-            <h2 style="color:var(--primary);">⏱️ Timer Best Practices</h2>
-            <div
-                style="background:var(--bg-light); padding:16px; border-radius:8px; margin:12px 0; border-left:4px solid var(--warning);">
-                <h3 style="font-size:16px; margin-bottom:8px;">🖥️ Desktop Usage</h3>
-                <p style="color:var(--text-dim); line-height:1.6;">
-                    • Keep browser tab <strong>visible and active</strong> for best performance<br>
-                    • Minimizing the browser may pause display updates<br>
-                    • Notifications will still fire when timer completes<br>
-                    • Enable Wake Lock in settings to prevent screen sleep
-                </p>
+            <h2 style="text-align:center; margin-bottom:20px;">ℹ️ Information</h2>
+
+            <div style="display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;">
+                <button class="info-tab-btn active" data-info-tab="about"
+                    style="flex:1; min-width:100px; padding:10px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">📖
+                    About</button>
+                <button class="info-tab-btn" data-info-tab="changelog"
+                    style="flex:1; min-width:100px; padding:10px; background:var(--bg-light); color:var(--text); border:none; border-radius:8px; cursor:pointer; font-weight:600;">📝
+                    Changelog</button>
+                <button class="info-tab-btn" data-info-tab="contact"
+                    style="flex:1; min-width:100px; padding:10px; background:var(--bg-light); color:var(--text); border:none; border-radius:8px; cursor:pointer; font-weight:600;">📧
+                    Contact</button>
             </div>
 
-            <div
-                style="background:var(--bg-light); padding:16px; border-radius:8px; margin:12px 0; border-left:4px solid var(--info);">
-                <h3 style="font-size:16px; margin-bottom:8px;">📱 Mobile Usage</h3>
-                <p style="color:var(--text-dim); line-height:1.6;">
-                    • <strong>Keep screen ON</strong> during Pomodoro sessions for best accuracy<br>
-                    • If screen turns off, timer continues but display may pause<br>
-                    • You'll receive notifications and vibration when timer completes<br>
-                    • Install as PWA for better reliability (tap "Install App" button)<br>
-                    • Battery impact is minimal with Wake Lock disabled
-                </p>
-            </div>
-
-            <div
-                style="background:var(--bg-light); padding:16px; border-radius:8px; margin:12px 0; border-left:4px solid var(--success);">
-                <h3 style="font-size:16px; margin-bottom:8px;">💡 Pro Tips</h3>
-                <p style="color:var(--text-dim); line-height:1.6;">
-                    • Use Pomodoro mode (25/5) for deep focus work<br>
-                    • Enable notifications for timer completion alerts<br>
-                    • Track habits immediately after completing them<br>
-                    • Export backups regularly to save your progress<br>
-                    • Custom habits support both time and money tracking
-                </p>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2 style="color:var(--primary);">📚 Features</h2>
-            <div
-                style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:16px; margin-top:16px;">
-                <div style="background:var(--bg-light); padding:16px; border-radius:8px;">
-                    <h3 style="font-size:16px; color:var(--warning);">📊 Habit Tracking</h3>
-                    <p style="color:var(--text-dim); font-size:14px; line-height:1.6;">
-                        Track time-based and money-based habits with customizable thresholds and color-coded status
-                        indicators.
-                    </p>
-                </div>
-                <div style="background:var(--bg-light); padding:16px; border-radius:8px;">
-                    <h3 style="font-size:16px; color:var(--info);">⏱️ Focus Timer</h3>
-                    <p style="color:var(--text-dim); font-size:14px; line-height:1.6;">
-                        Pomodoro timer with work/rest cycles, stopwatch mode, and loop support for extended sessions.
-                    </p>
-                </div>
-                <div style="background:var(--bg-light); padding:16px; border-radius:8px;">
-                    <h3 style="font-size:16px; color:var(--success);">🏆 Victory Vault</h3>
-                    <p style="color:var(--text-dim); font-size:14px; line-height:1.6;">
-                        Log daily wins, track streaks, and categorize achievements across health, work, and personal
-                        growth.
-                    </p>
-                </div>
-                <div style="background:var(--bg-light); padding:16px; border-radius:8px;">
-                    <h3 style="font-size:16px; color:var(--danger);">💰 Spending Analytics</h3>
-                    <p style="color:var(--text-dim); font-size:14px; line-height:1.6;">
-                        Track expenses across habits with visual charts and detailed breakdowns by day, week, and month.
-                    </p>
+            <!-- Dynamic Content Container -->
+            <div id="infoContent" style="min-height:400px;">
+                <div style="text-align:center; padding:40px; color:var(--text-dim);">
+                    <div style="font-size:24px; margin-bottom:12px;">⌛</div>
+                    Loading...
                 </div>
             </div>
-        </div>
-
-        <div class="card" style="text-align:center;">
-            <h2 style="color:var(--primary);">🔒 Privacy & Data</h2>
-            <p style="color:var(--text-dim); max-width:600px; margin:16px auto; line-height:1.8;">
-                All your data is stored <strong>locally on your device</strong> using IndexedDB. Nothing is sent to
-                external servers.
-                Use the export feature to create backups and import them on other devices.
-            </p>
-        </div>
-
-        <div class="card" style="text-align:center;">
-            <p style="color:var(--text-dim); font-size:14px;">
-                Made with 💪 for Champions<br>
-                <span style="opacity:0.6;">Open source PWA • No tracking • Works offline</span>
-            </p>
         </div>
     </div>
 
@@ -1748,6 +1676,46 @@
             }
         };
 
+        // ===== INFO CONTENT LOADER =====
+        const InfoLoader = {
+            cache: {},
+            currentTab: null,
+
+            async load(page) {
+                const container = $('infoContent');
+
+                // Show loading state
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-dim);"><div style="font-size:24px; margin-bottom:12px;">⌛</div>Loading...</div>';
+
+                try {
+                    // Check cache first
+                    if (this.cache[page]) {
+                        container.innerHTML = this.cache[page];
+                        this.currentTab = page;
+                        return;
+                    }
+
+                    // Fetch content
+                    const response = await fetch(`${page}.html`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                    const html = await response.text();
+                    this.cache[page] = html;
+                    container.innerHTML = html;
+                    this.currentTab = page;
+                } catch (err) {
+                    console.error('InfoLoader error:', err);
+
+                    // Check if running on file:// protocol
+                    if (window.location.protocol === 'file:') {
+                        container.innerHTML = '<div style="padding:40px;"><div style="text-align:center; color:var(--warning); margin-bottom:20px;"><div style="font-size:48px; margin-bottom:12px;">⚠️</div><h3>Local File System Detected</h3></div><p style="line-height:1.8; color:var(--text-dim);">The Info pages cannot load when opening index.html directly from your file system due to browser security restrictions.</p><p style="line-height:1.8; color:var(--text-dim); margin-top:16px;"><strong>To test locally:</strong></p><ul style="line-height:1.8; margin-top:8px;"><li>Use a local web server (Python: <code>python -m http.server 8000</code>)</li><li>Or deploy to GitHub Pages where it works perfectly</li><li>Or use VS Code Live Server extension</li></ul><p style="line-height:1.8; color:var(--success); margin-top:20px; padding:16px; background:var(--bg-light); border-radius:8px; border-left:4px solid var(--success);"><strong>✅ On GitHub Pages:</strong> All content loads dynamically and works perfectly!</p></div>';
+                    } else {
+                        container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--danger);"><div style="font-size:24px; margin-bottom:12px;">⚠️</div>Failed to load content. Please try again.<br><small style="color:var(--text-dim); margin-top:12px; display:block;">Error: ' + err.message + '</small></div>';
+                    }
+                }
+            }
+        };
+
         // ===== STATISTICS =====
         const Statistics = {
             renderStats() {
@@ -2362,6 +2330,9 @@
                     if (tab === 'wins') UI.renderWins();
                     if (tab === 'hist') UI.renderHistory();
                     if (tab === 'settings') renderSettings();
+                    if (tab === 'info' && !InfoLoader.currentTab) {
+                        InfoLoader.load('about');
+                    }
                 }
             });
         });
@@ -2439,6 +2410,25 @@
         document.querySelectorAll('.modal').forEach(modal => {
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) Modal.close();
+            });
+        });
+
+        // ===== INFO TAB NAVIGATION =====
+        document.querySelectorAll('[data-info-tab]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update button styles
+                document.querySelectorAll('.info-tab-btn').forEach(b => {
+                    b.style.background = 'var(--bg-light)';
+                    b.style.color = 'var(--text)';
+                    b.classList.remove('active');
+                });
+                btn.style.background = 'var(--primary)';
+                btn.style.color = 'white';
+                btn.classList.add('active');
+
+                // Load external content
+                const page = btn.dataset.infoTab;
+                InfoLoader.load(page);
             });
         });
 

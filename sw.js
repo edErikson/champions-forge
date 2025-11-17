@@ -1,5 +1,13 @@
-const CACHE = 'forge-9v.1';
-const FILES = ['index.html', 'manifest.json', 'images/icon-192.png', 'images/icon-512.png'];
+const CACHE = 'forge-9v.2';
+const FILES = [
+    'index.html',
+    'about.html',
+    'changelog.html',
+    'contact.html',
+    'manifest.json',
+    'images/icon-192.png',
+    'images/icon-512.png'
+];
 
 self.addEventListener('install', e => {
     e.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)));
