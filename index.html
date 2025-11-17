@@ -1,0 +1,2877 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/icon-192.png">
+    <title>Champion's Forge — Production Beta</title>
+    <style>
+        :root {
+            --bg: #0a0e27;
+            --bg-light: #151b3d;
+            --card: #1a2147;
+            --card-hover: #222b54;
+            --primary: #4a90e2;
+            --primary-dark: #2b5fa8;
+            --success: #50c878;
+            --warning: #f5a623;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --text: #e8eaf0;
+            --text-dim: #a0a8c0;
+            --border: #2d3757;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            margin: 20px 0;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        h2 {
+            color: var(--text);
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background: var(--card-hover);
+            border-color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .card {
+            background: var(--card);
+            padding: 24px;
+            border-radius: 16px;
+            margin: 16px 0;
+            border: 1px solid var(--border);
+            transition: border-color 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            padding: 14px 28px;
+            margin: 8px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-info {
+            background: var(--info);
+        }
+
+        .habit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
+            gap: 16px;
+            margin: 20px auto;
+            max-width: 1200px;
+            justify-content: center;
+        }
+
+        .habit-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            text-align: center;
+            width: 100%;
+        }
+
+        .habit-card.active {
+            border-color: var(--primary);
+        }
+
+        .habit-status {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 16px 0;
+        }
+
+        .habit-status.safe {
+            color: var(--success);
+        }
+
+        .habit-status.warning {
+            color: var(--warning);
+        }
+
+        .habit-status.danger {
+            color: var(--danger);
+        }
+
+        .timer-display {
+            font-size: 56px;
+            font-weight: 700;
+            margin: 20px 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--card);
+            padding: 32px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            border: 2px solid var(--primary);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-light);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 16px;
+            margin: 10px 0;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .entry {
+            background: var(--bg-light);
+            padding: 16px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .entry-delete {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .win-category {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-right: 8px;
+        }
+
+        .cat-health {
+            background: var(--success);
+            color: white;
+        }
+
+        .cat-work {
+            background: var(--primary);
+            color: white;
+        }
+
+        .cat-personal {
+            background: var(--warning);
+            color: white;
+        }
+
+        .cat-other {
+            background: var(--text-dim);
+            color: white;
+        }
+
+        .timer-loop {
+            background: var(--bg-light);
+            padding: 16px;
+            border-radius: 10px;
+            margin: 12px auto;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .timer-loop input {
+            width: 80px;
+            display: inline-block;
+        }
+
+        .timer-loop label {
+            display: inline-block;
+            margin: 8px;
+        }
+
+        .settings-section {
+            margin: 24px 0;
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: 12px;
+        }
+
+        .habit-config {
+            display: grid;
+            gap: 12px;
+            margin: 12px auto;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            max-width: 900px;
+        }
+
+        .habit-config-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--card);
+            border-radius: 8px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: var(--border);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+        .preset-btn {
+            background: var(--bg-light);
+            padding: 10px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--primary);
+            background: var(--card);
+        }
+
+        .streak-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--warning), var(--danger));
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .timer-display {
+                font-size: 42px;
+            }
+
+            .habit-grid {
+                grid-template-columns: 1fr;
+                max-width: 100%;
+            }
+
+            .habit-config {
+                grid-template-columns: 1fr;
+            }
+
+            .habit-config-item {
+                padding: 12px !important;
+            }
+
+            .habit-config-item>div:first-child {
+                font-size: 16px !important;
+            }
+
+            .habit-config-item input[type="number"] {
+                font-size: 14px !important;
+                padding: 6px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="errorBanner" class="error-banner"
+        style="display:none; position:fixed; top:0; left:0; right:0; background:var(--danger); padding:12px; text-align:center; z-index:9999; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+    </div>
+
+    <h1>🏆 CHAMPION'S FORGE</h1>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="dash">Dashboard</button>
+        <button class="tab-btn" data-tab="timer">Timer</button>
+        <button class="tab-btn" data-tab="wins">Wins</button>
+        <button class="tab-btn" data-tab="hist">History</button>
+        <button class="tab-btn" data-tab="settings">Settings</button>
+        <button class="tab-btn" data-tab="about">About</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dash" class="page">
+        <div class="card" style="text-align:center;">
+            <h2>Today's Overview</h2>
+            <p style="font-size:18px; color:var(--text-dim);">
+                <span id="dailyWins">0</span> Wins •
+                <span id="dailyFocus">0.0</span> Focus Hours •
+                <span id="dailyHabits">0</span> Habits Tracked
+            </p>
+        </div>
+
+        <div id="habitDashboard" class="habit-grid"></div>
+    </div>
+
+    <!-- HABITS -->
+    <div id="habits" class="page" style="display:none;">
+        <div class="card">
+            <h2 style="text-align:center;">Track Your Habits</h2>
+            <p style="color:var(--text-dim); margin-bottom:20px; text-align:center;">Click on any habit to log it.
+                Colors change based on time since last log.</p>
+            <div id="habitTracking" class="habit-grid"></div>
+        </div>
+    </div>
+
+    <!-- TIMER -->
+    <div id="timer" class="page" style="display:none;">
+        <div class="card">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+                <h2 style="margin:0;">Focus Timer</h2>
+                <label class="switch">
+                    <input type="checkbox" id="pomodoroToggle" onchange="Timer.togglePomodoro()">
+                    <span class="slider"></span>
+                </label>
+                <span style="font-weight:600;">Pomodoro Mode</span>
+            </div>
+
+            <div id="pomodoroSettings" style="display:none;">
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:12px 0;">
+                    <button class="preset-btn" onclick="Timer.setPomodoro(25,5)">25/5</button>
+                    <button class="preset-btn" onclick="Timer.setPomodoro(50,10)">50/10</button>
+                    <button class="preset-btn" onclick="Timer.setPomodoro(90,20)">90/20</button>
+                </div>
+                <div style="text-align:center; margin:12px 0;">
+                    <input type="number" id="pomoWork" value="25" min="1" max="300" style="width:80px;">
+                    <span style="font-size:20px; font-weight:bold;">/</span>
+                    <input type="number" id="pomoRest" value="5" min="1" max="60" style="width:80px;">
+                    <button class="preset-btn" onclick="Timer.setCustomPomodoro()">SET</button>
+                </div>
+
+                <div class="timer-loop">
+                    <label style="font-weight:600;">
+                        <input type="checkbox" id="loopEnabled"> Loop Timer
+                    </label>
+                    <div id="loopSettings" style="margin-top:12px; display:none;">
+                        <label>Repeat <input type="number" id="loopCount" value="3" min="1" max="20"
+                                style="width:60px;"> times</label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="regularTimer">
+                <div style="text-align:center; margin:20px 0;">
+                    <input type="text" id="timerName" placeholder="Activity name"
+                        style="width:200px; display:inline-block;">
+                </div>
+                <div style="display:flex; align-items:center; justify-content:center; gap:15px; margin:15px 0;">
+                    <span style="font-weight:600;">Timer</span>
+                    <label class="switch">
+                        <input type="checkbox" id="stopwatchMode">
+                        <span class="slider"></span>
+                    </label>
+                    <span style="font-weight:600;">Stopwatch</span>
+                </div>
+                <div id="timerMinutes" style="text-align:center; margin:12px 0;">
+                    <input type="number" id="timerDuration" value="25" min="1" max="999" style="width:100px;">
+                    <span style="font-size:18px; font-weight:bold;"> minutes</span>
+                </div>
+            </div>
+
+            <div style="text-align:center;">
+                <button class="btn btn-success" onclick="Timer.start()" id="timerStartBtn">START</button>
+                <button class="btn btn-danger" onclick="Timer.stop()" id="timerStopBtn"
+                    style="display:none;">STOP</button>
+            </div>
+
+            <div id="timerDisplay" class="timer-display" style="text-align:center; color:var(--primary);">00:00</div>
+            <div id="timerStatus" style="text-align:center; font-size:18px; color:var(--text-dim);">Ready</div>
+            <div id="loopProgress" style="text-align:center; font-size:16px; color:var(--warning); margin-top:10px;">
+            </div>
+            <p style="font-size:11px; color:var(--text-dim); margin-top:16px; opacity:0.7; font-style:italic;">
+                💡 Timer keeps running in background. You'll get notifications at completion.
+            </p>
+        </div>
+    </div>
+
+    <!-- WINS -->
+    <div id="wins" class="page" style="display:none;">
+        <div class="card" style="text-align:center;">
+            <h2>Victory Vault</h2>
+            <button class="btn btn-warning" onclick="Modal.open('win')">+ LOG WIN</button>
+            <div style="margin:20px 0;">
+                <span class="streak-badge">🔥 <span id="winStreak">0</span> Day Streak</span>
+            </div>
+        </div>
+        <div class="card">
+            <div class="tabs" style="margin:0 0 20px 0;">
+                <button class="tab-btn active" data-win-filter="all">All</button>
+                <button class="tab-btn" data-win-filter="health">Health</button>
+                <button class="tab-btn" data-win-filter="work">Work</button>
+                <button class="tab-btn" data-win-filter="personal">Personal</button>
+                <button class="tab-btn" data-win-filter="other">Other</button>
+            </div>
+            <div id="winsFeed"></div>
+        </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="hist" class="page" style="display:none;">
+        <div class="card">
+            <div class="tabs">
+                <button class="tab-btn active" data-history-tab="events">Events</button>
+                <button class="tab-btn" data-history-tab="stats">Statistics</button>
+            </div>
+
+            <div id="historyEvents" style="display:block;">
+                <div class="tabs" style="margin-top:12px;">
+                    <button class="tab-btn active" data-filter="all">All</button>
+                    <button class="tab-btn" data-filter="habit">Habits</button>
+                    <button class="tab-btn" data-filter="focus">Focus</button>
+                    <button class="tab-btn" data-filter="win">Wins</button>
+                </div>
+                <div id="historyFeed" style="max-height:70vh; overflow-y:auto; padding:12px;"></div>
+            </div>
+
+            <div id="historyStats" style="display:none;">
+                <div style="max-height:70vh; overflow-y:auto; padding:12px;">
+                    <h3 style="text-align:center; margin-bottom:20px; color:var(--primary);">📊 Spending Analytics</h3>
+
+                    <div
+                        style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:24px;">
+                        <div class="card" style="text-align:center; padding:16px;">
+                            <div style="font-size:14px; color:var(--text-dim); margin-bottom:8px;">Today</div>
+                            <div id="statsToday" style="font-size:28px; font-weight:bold; color:var(--warning);">$0.00
+                            </div>
+                        </div>
+                        <div class="card" style="text-align:center; padding:16px;">
+                            <div style="font-size:14px; color:var(--text-dim); margin-bottom:8px;">This Week</div>
+                            <div id="statsWeek" style="font-size:28px; font-weight:bold; color:var(--info);">$0.00</div>
+                        </div>
+                        <div class="card" style="text-align:center; padding:16px;">
+                            <div style="font-size:14px; color:var(--text-dim); margin-bottom:8px;">This Month</div>
+                            <div id="statsMonth" style="font-size:28px; font-weight:bold; color:var(--danger);">$0.00
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding:16px;">
+                        <h3 style="text-align:center; margin-bottom:16px;">💰 Spending by Habit</h3>
+                        <div style="width:100%; max-width:300px; margin:0 auto;">
+                            <canvas id="spendingChart" width="300" height="300"
+                                style="width:100%; height:auto; display:block;"></canvas>
+                            <div id="chartLegend" style="margin-top:16px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding:16px; margin-top:16px;">
+                        <h3 style="margin-bottom:12px;">🏆 Top Spending Habits</h3>
+                        <div id="topHabits"></div>
+                    </div>
+
+                    <div class="card" style="padding:16px; margin-top:16px;">
+                        <h3 style="margin-bottom:12px;">⏱️ Focus Time Summary</h3>
+                        <div id="focusSummary"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div id="about" class="page" style="display:none;">
+        <div class="card" style="text-align:center;">
+            <h1 style="margin:0; font-size:36px;">🏆 CHAMPION'S FORGE</h1>
+            <p style="color:var(--text-dim); margin:12px 0; font-size:18px;">Version 9.1</p>
+            <p style="color:var(--text); max-width:600px; margin:20px auto; line-height:1.8;">
+                A powerful habit tracker, focus timer, and achievement logger designed to help you build better habits
+                and track your progress.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2 style="color:var(--primary);">⏱️ Timer Best Practices</h2>
+            <div
+                style="background:var(--bg-light); padding:16px; border-radius:8px; margin:12px 0; border-left:4px solid var(--warning);">
+                <h3 style="font-size:16px; margin-bottom:8px;">🖥️ Desktop Usage</h3>
+                <p style="color:var(--text-dim); line-height:1.6;">
+                    • Keep browser tab <strong>visible and active</strong> for best performance<br>
+                    • Minimizing the browser may pause display updates<br>
+                    • Notifications will still fire when timer completes<br>
+                    • Enable Wake Lock in settings to prevent screen sleep
+                </p>
+            </div>
+
+            <div
+                style="background:var(--bg-light); padding:16px; border-radius:8px; margin:12px 0; border-left:4px solid var(--info);">
+                <h3 style="font-size:16px; margin-bottom:8px;">📱 Mobile Usage</h3>
+                <p style="color:var(--text-dim); line-height:1.6;">
+                    • <strong>Keep screen ON</strong> during Pomodoro sessions for best accuracy<br>
+                    • If screen turns off, timer continues but display may pause<br>
+                    • You'll receive notifications and vibration when timer completes<br>
+                    • Install as PWA for better reliability (tap "Install App" button)<br>
+                    • Battery impact is minimal with Wake Lock disabled
+                </p>
+            </div>
+
+            <div
+                style="background:var(--bg-light); padding:16px; border-radius:8px; margin:12px 0; border-left:4px solid var(--success);">
+                <h3 style="font-size:16px; margin-bottom:8px;">💡 Pro Tips</h3>
+                <p style="color:var(--text-dim); line-height:1.6;">
+                    • Use Pomodoro mode (25/5) for deep focus work<br>
+                    • Enable notifications for timer completion alerts<br>
+                    • Track habits immediately after completing them<br>
+                    • Export backups regularly to save your progress<br>
+                    • Custom habits support both time and money tracking
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="color:var(--primary);">📚 Features</h2>
+            <div
+                style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:16px; margin-top:16px;">
+                <div style="background:var(--bg-light); padding:16px; border-radius:8px;">
+                    <h3 style="font-size:16px; color:var(--warning);">📊 Habit Tracking</h3>
+                    <p style="color:var(--text-dim); font-size:14px; line-height:1.6;">
+                        Track time-based and money-based habits with customizable thresholds and color-coded status
+                        indicators.
+                    </p>
+                </div>
+                <div style="background:var(--bg-light); padding:16px; border-radius:8px;">
+                    <h3 style="font-size:16px; color:var(--info);">⏱️ Focus Timer</h3>
+                    <p style="color:var(--text-dim); font-size:14px; line-height:1.6;">
+                        Pomodoro timer with work/rest cycles, stopwatch mode, and loop support for extended sessions.
+                    </p>
+                </div>
+                <div style="background:var(--bg-light); padding:16px; border-radius:8px;">
+                    <h3 style="font-size:16px; color:var(--success);">🏆 Victory Vault</h3>
+                    <p style="color:var(--text-dim); font-size:14px; line-height:1.6;">
+                        Log daily wins, track streaks, and categorize achievements across health, work, and personal
+                        growth.
+                    </p>
+                </div>
+                <div style="background:var(--bg-light); padding:16px; border-radius:8px;">
+                    <h3 style="font-size:16px; color:var(--danger);">💰 Spending Analytics</h3>
+                    <p style="color:var(--text-dim); font-size:14px; line-height:1.6;">
+                        Track expenses across habits with visual charts and detailed breakdowns by day, week, and month.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="text-align:center;">
+            <h2 style="color:var(--primary);">🔒 Privacy & Data</h2>
+            <p style="color:var(--text-dim); max-width:600px; margin:16px auto; line-height:1.8;">
+                All your data is stored <strong>locally on your device</strong> using IndexedDB. Nothing is sent to
+                external servers.
+                Use the export feature to create backups and import them on other devices.
+            </p>
+        </div>
+
+        <div class="card" style="text-align:center;">
+            <p style="color:var(--text-dim); font-size:14px;">
+                Made with 💪 for Champions<br>
+                <span style="opacity:0.6;">Open source PWA • No tracking • Works offline</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="settings" class="page" style="display:none;">
+        <div class="card" style="text-align:center;">
+            <h2>Habit Configuration</h2>
+            <p style="color:var(--text-dim); margin-bottom:20px;">Enable habits you want to track and set time
+                thresholds.</p>
+            <div id="habitSettings"></div>
+            <button class="btn btn-primary" onclick="Settings.saveHabits()">SAVE CHANGES</button>
+        </div>
+
+        <div class="card" style="text-align:center;">
+            <h2>Timer Settings</h2>
+            <div style="margin:16px 0;">
+                <label style="display:flex; align-items:center; gap:8px; justify-content:center; cursor:pointer;">
+                    <input type="checkbox" id="wakeLockToggle" style="width:auto; margin:0;">
+                    <span style="font-weight:600;">Keep screen awake during timers (Wake Lock)</span>
+                </label>
+                <p style="font-size:12px; color:var(--text-dim); margin:4px 0; font-style:italic;">
+                    Prevents screen from sleeping during active timers. May increase battery usage.
+                </p>
+            </div>
+        </div>
+
+        <div class="card" style="text-align:center;">
+            <h2>Sound Settings</h2>
+            <div style="margin:16px 0;">
+                <label style="display:block; margin-bottom:8px; font-weight:600;">Sound Type</label>
+                <select id="soundType" style="width:100%; max-width:400px; margin:0 auto;">
+                    <option value="beep">Beep (Default)</option>
+                    <option value="success">Success Chime</option>
+                    <option value="alert">Alert</option>
+                    <option value="soft">Soft Tone</option>
+                </select>
+            </div>
+            <div style="margin:16px 0;">
+                <label style="display:block; margin-bottom:8px; font-weight:600;">Volume: <span
+                        id="volumeDisplay">30%</span>
+                </label>
+                <input type="range" id="volumeSlider" min="0" max="100" value="30" style="width:100%; max-width:400px;">
+            </div>
+            <div style="margin:16px 0;">
+                <label style="display:block; margin-bottom:8px; font-weight:600;">Repeat</label>
+                <input type="number" id="soundRepeat" min="1" max="5" value="1" style="width:100px;">
+                <span style="margin-left:8px;">time(s)</span>
+            </div>
+            <button class="btn btn-info" onclick="Settings.testSound()">🔊 TEST SOUND</button>
+            <button class="btn btn-success" onclick="Settings.saveSoundSettings()">💾 SAVE</button>
+        </div>
+
+        <div class="card" style="text-align:center;">
+            <h2>Data Management</h2>
+            <button class="btn btn-info" onclick="Backup.export()">📥 EXPORT BACKUP</button>
+            <button class="btn btn-info" onclick="Backup.import()">📤 IMPORT BACKUP</button>
+            <button class="btn btn-danger" onclick="Settings.clearAll()">🗑️ CLEAR ALL DATA</button>
+        </div>
+
+        <input type="file" id="importFile" accept=".json" style="display:none;">
+    </div>
+
+    <!-- MODALS -->
+    <div id="winModal" class="modal">
+        <div class="modal-content">
+            <h2>Log Your Win 🏆</h2>
+            <select id="winCategory">
+                <option value="health">💪 Health & Fitness</option>
+                <option value="work">💼 Work & Productivity</option>
+                <option value="personal">🌟 Personal Growth</option>
+                <option value="other">📌 Other</option>
+            </select>
+            <textarea id="winInput" placeholder="What did you accomplish?" rows="4"></textarea>
+            <div style="text-align:center;">
+                <button class="btn btn-warning" onclick="Actions.logWin()">SAVE WIN</button>
+                <button class="btn" style="background:var(--border);" onclick="Modal.close()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="customHabitModal" class="modal">
+        <div class="modal-content">
+            <h2>Create Custom Habit 🎯</h2>
+            <input type="text" id="customHabitName" placeholder="Habit name (e.g., Morning Run)" maxlength="50">
+
+            <div style="margin:16px 0;">
+                <label style="display:block; margin-bottom:8px; font-weight:600;">Choose Icon:</label>
+                <select id="customHabitIcon" style="width:100%; font-size:20px; padding:8px;">
+                    <option value="🏃">🏃 Running</option>
+                    <option value="🚴">🚴 Cycling</option>
+                    <option value="🏋️">🏋️ Gym</option>
+                    <option value="🧘">🧘 Yoga/Meditation</option>
+                    <option value="📚">📚 Reading</option>
+                    <option value="✍️">✍️ Writing</option>
+                    <option value="🎨">🎨 Art/Creative</option>
+                    <option value="🎵">🎵 Music</option>
+                    <option value="🎮">🎮 Gaming</option>
+                    <option value="📱">📱 Phone/Social Media</option>
+                    <option value="💻">💻 Computer Time</option>
+                    <option value="📺">📺 TV/Netflix</option>
+                    <option value="🍔">🍔 Fast Food</option>
+                    <option value="🍕">🍕 Pizza</option>
+                    <option value="🍰">🍰 Sweets/Dessert</option>
+                    <option value="🥤">🥤 Soda/Sugary Drinks</option>
+                    <option value="☕">☕ Coffee</option>
+                    <option value="🍺">🍺 Alcohol/Beer</option>
+                    <option value="🚬">🚬 Smoking</option>
+                    <option value="💊">💊 Medicine/Drugs</option>
+                    <option value="💰">💰 Shopping/Spending</option>
+                    <option value="🛒">🛒 Grocery Shopping</option>
+                    <option value="💧">💧 Water</option>
+                    <option value="🥗">🥗 Healthy Food</option>
+                    <option value="😴">😴 Sleep</option>
+                    <option value="🧹">🧹 Cleaning</option>
+                    <option value="🚿">🚿 Shower/Hygiene</option>
+                    <option value="🎯">🎯 Goal/Target</option>
+                    <option value="⚡">⚡ Energy/Productivity</option>
+                    <option value="🌟">🌟 Achievement</option>
+                    <option value="❤️">❤️ Health/Wellness</option>
+                    <option value="🧠">🧠 Mental Health</option>
+                    <option value="😊">😊 Mood/Happiness</option>
+                    <option value="🔔">🔔 Reminder</option>
+                    <option value="📊">📊 Tracking</option>
+                    <option value="✅">✅ Task/Todo</option>
+                </select>
+            </div>
+
+            <div style="margin:16px 0;">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    <input type="checkbox" id="customHabitSpending" style="width:auto; margin:0;">
+                    <span><strong>💰 Money Tracking Habit</strong> (tracks spending instead of time)</span>
+                </label>
+                <p style="font-size:12px; color:var(--text-dim); margin:4px 0 0 28px; font-style:italic;">
+                    Check this if you want to track money spent, not time since last activity
+                </p>
+            </div>
+
+            <div id="timePeriodSection"
+                style="display:none; margin:16px 0; padding:16px; background:var(--bg-light); border-radius:8px;">
+                <h3 style="font-size:16px; margin-bottom:12px; color:var(--primary);">📅 Tracking Period</h3>
+                <label style="display:block; margin-bottom:8px; font-weight:600;">Period:</label>
+                <select id="timePeriod" style="width:100%; margin-bottom:8px;">
+                    <option value="weekly">Weekly (7 days)</option>
+                    <option value="monthly" selected>Monthly (30 days)</option>
+                    <option value="custom">Custom days</option>
+                </select>
+                <div id="customDaysInput" style="display:none;">
+                    <input type="number" id="customDays" value="14" min="1" max="365" placeholder="Number of days">
+                </div>
+            </div>
+
+            <div id="timeThresholdsSection" style="margin:20px 0;">
+                <h3 id="thresholdTitle" style="font-size:16px; margin-bottom:12px;">⏱️ Time Thresholds (hours):</h3>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px;">
+                    <div id="threshold1Container">
+                        <label id="label1" style="font-size:12px; color:var(--danger); font-weight:600;">🔴
+                            Danger</label>
+                        <input type="number" id="customThreshold1" value="1" min="0" max="9999"
+                            style="width:100%; margin:4px 0;">
+                    </div>
+                    <div id="threshold2Container">
+                        <label id="label2" style="font-size:12px; color:var(--warning); font-weight:600;">⚠️
+                            Warning</label>
+                        <input type="number" id="customThreshold2" value="2" min="0" max="9999"
+                            style="width:100%; margin:4px 0;">
+                    </div>
+                    <div id="threshold3Container">
+                        <label id="label3" style="font-size:12px; color:var(--success); font-weight:600;">✅ Safe</label>
+                        <input type="number" id="customThreshold3" value="4" min="0" max="9999"
+                            style="width:100%; margin:4px 0;">
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin:20px 0; padding:16px; background:var(--bg-light); border-radius:8px;">
+                <h3 style="font-size:16px; margin-bottom:12px; color:var(--primary);">📝 Logging Options</h3>
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-bottom:8px;">
+                    <input type="checkbox" id="customHabitNote" style="width:auto; margin:0;">
+                    <span>📝 Ask for notes when logging</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-bottom:8px;">
+                    <input type="checkbox" id="customHabitSpendingCheck" style="width:auto; margin:0;">
+                    <span>💵 Ask for spending amount</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    <input type="checkbox" id="customHabitPositive" style="width:auto; margin:0;">
+                    <span>✅ Positive Habit (good when done recently - like exercise, water)</span>
+                </label>
+            </div>
+
+            <div style="text-align:center; margin-top:24px;">
+                <button class="btn btn-success" onclick="Actions.createCustomHabit()">CREATE HABIT</button>
+                <button class="btn" style="background:var(--border);" onclick="Modal.close()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DEFAULT HABITS CONFIGURATION =====
+        const DEFAULT_HABITS = {
+            water: { name: '💧 Water Intake', enabled: true, thresholds: [4, 2, 1], icon: '💧', isDefault: true, trackingMode: 'time', note: true, trackSpending: false, isPositive: true },
+            eating: { name: '🍽️ Meal Tracking', enabled: true, thresholds: [2, 4, 6], icon: '🍽️', isDefault: true, trackingMode: 'time', note: true, trackSpending: true, isPositive: false },
+            spending: { name: '💰 Money Spending', enabled: false, thresholds: [50, 100, 200], icon: '💰', isDefault: true, trackingMode: 'money', note: true, trackSpending: true, isPositive: false, timePeriod: 'monthly', customDays: 30 }
+        };
+
+        // ===== UTILITIES =====
+        const $ = id => document.getElementById(id);
+        const int = v => parseInt(v);
+        const pad = n => String(n).padStart(2, '0');
+        const Utils = {
+            fmt(ms) {
+                const seconds = Math.floor(ms / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
+
+                if (days > 0) {
+                    const remainingHours = hours % 24;
+                    return `${days}d ${remainingHours}h`;
+                } else if (hours > 0) {
+                    const remainingMinutes = minutes % 60;
+                    return `${hours}h ${remainingMinutes}m`;
+                } else if (minutes > 0) {
+                    return `${minutes}m`;
+                } else {
+                    return 'Just now';
+                }
+            },
+            fmtSW(s) {
+                const h = Math.floor(s / 3600),
+                    m = Math.floor((s % 3600) / 60),
+                    sec = s % 60;
+                return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${pad(m)}:${pad(sec)}`;
+            },
+            err(msg) {
+                const b = $('errorBanner');
+                b.textContent = msg;
+                b.style.display = 'block';
+                setTimeout(() => b.style.display = 'none', 5000);
+            },
+            valid(d) {
+                return d && typeof d === 'object' && Array.isArray(d.events);
+            }
+        };
+
+        // ===== DATABASE =====
+        const DB = {
+            db: null,
+            init() {
+                return new Promise((ok, fail) => {
+                    const r = indexedDB.open('EternalForge', 2);
+                    r.onupgradeneeded = e => {
+                        this.db = e.target.result;
+                        if (!this.db.objectStoreNames.contains('state')) {
+                            this.db.createObjectStore('state', { keyPath: 'id' });
+                        }
+                    };
+                    r.onsuccess = e => { this.db = e.target.result; ok(); };
+                    r.onerror = e => { console.error('DB Error:', e.target.error); fail(); };
+                });
+            },
+            save(key, data) {
+                if (!this.db) return;
+                const tx = this.db.transaction('state', 'readwrite');
+                tx.objectStore('state').put({ id: key, data });
+            },
+            load(key) {
+                return new Promise(ok => {
+                    if (!this.db) return ok(null);
+                    const r = this.db.transaction('state', 'readonly').objectStore('state').get(key);
+                    r.onsuccess = () => ok(r.result?.data || null);
+                    r.onerror = () => ok(null);
+                });
+            }
+        };
+
+        // ===== SOUND =====
+        const Sound = {
+            settings: { type: 'beep', volume: 0.3, repeat: 1 },
+            ctx: null,
+
+            getContext() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                // Resume if suspended (required for background/minimized tabs)
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                return this.ctx;
+            },
+
+            play(customFreq = null, customDur = null) {
+                try {
+                    const ctx = this.getContext();
+                    const settings = this.settings;
+                    const repeat = settings.repeat || 1;
+
+                    for (let i = 0; i < repeat; i++) {
+                        const startTime = ctx.currentTime + (i * 0.4);
+
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+
+                        let freq = customFreq || 1200;
+                        let dur = customDur || 0.3;
+
+                        if (settings.type === 'success') {
+                            freq = 800 + (i * 200);
+                            dur = 0.2;
+                        } else if (settings.type === 'alert') {
+                            freq = 1500;
+                            dur = 0.5;
+                        } else if (settings.type === 'soft') {
+                            freq = 600;
+                            dur = 0.4;
+                        }
+
+                        osc.frequency.value = freq;
+                        osc.type = 'sine';
+                        gain.gain.setValueAtTime(settings.volume, startTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, startTime + dur);
+                        osc.start(startTime);
+                        osc.stop(startTime + dur);
+                    }
+                } catch (err) { console.error('Sound Error:', err); }
+            },
+
+            loadSettings() {
+                const saved = localStorage.getItem('soundSettings');
+                if (saved) {
+                    this.settings = JSON.parse(saved);
+                }
+            },
+
+            saveSettings() {
+                localStorage.setItem('soundSettings', JSON.stringify(this.settings));
+            }
+        };
+
+        // ===== STATE =====
+        const State = {
+            data: {
+                events: [],
+                habits: JSON.parse(JSON.stringify(DEFAULT_HABITS)),
+                habitLog: {},
+                spendingCategories: [],
+                timer: { running: false, start: 0, planned: 0, name: '', mode: 'timer', pomoEnabled: false, loop: { enabled: false, count: 3, current: 0, isRest: false } },
+                pomoSettings: { work: 25, rest: 5 }
+            },
+            async load() {
+                const saved = await DB.load(1);
+                if (saved && Utils.valid(saved)) {
+                    this.data = { ...this.data, ...saved };
+
+                    // Ensure all required properties exist
+                    if (!this.data.habits) this.data.habits = JSON.parse(JSON.stringify(DEFAULT_HABITS));
+                    if (!this.data.habitLog) this.data.habitLog = {};
+                    if (!this.data.spendingCategories) this.data.spendingCategories = [];
+                    if (!this.data.timer) this.data.timer = { running: false, start: 0, planned: 0, name: '', mode: 'timer' };
+                    if (!this.data.timer.loop) this.data.timer.loop = { enabled: false, count: 3, current: 0, isRest: false };
+                    if (!this.data.pomoSettings) this.data.pomoSettings = { work: 25, rest: 5 };
+
+                    // Sync habits with defaults and migrate to new structure
+                    Object.keys(DEFAULT_HABITS).forEach(key => {
+                        if (!this.data.habits[key]) {
+                            this.data.habits[key] = JSON.parse(JSON.stringify(DEFAULT_HABITS[key]));
+                        }
+                    });
+
+                    // Migrate existing habits to new structure
+                    Object.keys(this.data.habits).forEach(key => {
+                        const habit = this.data.habits[key];
+
+                        // Add trackingMode if missing
+                        if (!habit.trackingMode) {
+                            habit.trackingMode = habit.isMoneyOnly ? 'money' : 'time';
+                        }
+
+                        // Add isPositive if missing
+                        if (!habit.hasOwnProperty('isPositive')) {
+                            habit.isPositive = false;
+                        }
+
+                        // Migrate old canTrackSpending to trackSpending
+                        if (habit.hasOwnProperty('canTrackSpending') && !habit.hasOwnProperty('trackSpending')) {
+                            habit.trackSpending = false;
+                            habit.note = habit.note || false;
+                        }
+
+                        // Add time period for money habits
+                        if (habit.trackingMode === 'money') {
+                            if (!habit.timePeriod) habit.timePeriod = 'monthly';
+                            if (!habit.customDays) habit.customDays = 30;
+                        }
+
+                        // Clean up old properties
+                        delete habit.canTrackSpending;
+                        delete habit.trackValue;
+                        delete habit.monthlyTotal;
+                        delete habit.isMoneyOnly;
+                        delete habit.trackDuration;
+                    });
+
+                    this.save();
+                    if (this.data.timer.running) Timer.resume();
+                }
+            },
+            save() {
+                if (this.data.events.length > 5000) {
+                    this.data.events = this.data.events.slice(-5000);
+                }
+                DB.save(1, this.data);
+            },
+
+            getMonthlyTotal(habitKey) {
+                const now = new Date();
+                const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+                return State.data.events
+                    .filter(e => e.type === 'habit' && e.habit === habitKey && e.time >= firstDay && e.value)
+                    .reduce((sum, e) => sum + parseFloat(e.value || 0), 0);
+            }
+        };
+
+        // ===== TIMER ENGINE (OPTIMIZED) =====
+        const Timer = {
+            instance: null,
+            wakeLock: null,
+            bgInterval: null,
+            lastUpdate: 0,
+            wakeLockEnabled: false,
+
+            async requestWakeLock() {
+                // Only request wake lock if user enabled it in settings
+                if (this.wakeLockEnabled && 'wakeLock' in navigator) {
+                    try {
+                        this.wakeLock = await navigator.wakeLock.request('screen');
+                        console.log('✅ Wake Lock acquired');
+                    } catch (err) { console.error('Wake Lock failed:', err); }
+                }
+            },
+
+            releaseWakeLock() {
+                if (this.wakeLock) {
+                    this.wakeLock.release();
+                    this.wakeLock = null;
+                }
+            },
+
+            startBackgroundInterval() {
+                // Fallback interval for background timing
+                // Ensures transitions fire even when rAF is throttled
+                this.stopBackgroundInterval();
+                this.bgInterval = setInterval(() => {
+                    if (document.hidden && State.data.timer.running) {
+                        this.tick();
+                    }
+                }, 1000);
+            },
+
+            stopBackgroundInterval() {
+                if (this.bgInterval) {
+                    clearInterval(this.bgInterval);
+                    this.bgInterval = null;
+                }
+            },
+
+            notify(title, body) {
+                if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+
+                // Only show notification if permission already granted
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification(title, { body, icon: 'images/icon-192.png' });
+                }
+
+                Sound.play();
+            },
+
+            togglePomodoro() {
+                const enabled = $('pomodoroToggle').checked;
+                $('pomodoroSettings').style.display = enabled ? 'block' : 'none';
+                $('regularTimer').style.display = enabled ? 'none' : 'block';
+                State.data.timer.pomoEnabled = enabled;
+                State.save();
+            },
+
+            setPomodoro(w, r) {
+                State.data.pomoSettings = { work: w, rest: r };
+                State.save();
+                // Update UI to show selected values
+                $('pomoWork').value = w;
+                $('pomoRest').value = r;
+                Utils.err(`⏱️ Set to ${w} min work / ${r} min rest`);
+            },
+
+            setCustomPomodoro() {
+                const w = int($('pomoWork').value), r = int($('pomoRest').value);
+                if (!w || w < 1 || w > 300) return Utils.err('Work time must be 1-300 minutes');
+                if (!r || r < 1 || r > 60) return Utils.err('Rest time must be 1-60 minutes');
+                this.setPomodoro(w, r);
+            },
+
+            async start() {
+                if (State.data.timer.running) return;
+                await this.requestWakeLock();
+
+                // Reset timer display color
+                $('timerDisplay').style.color = 'var(--primary)';
+
+                const pomo = State.data.timer.pomoEnabled;
+                const isStopwatch = !pomo && $('stopwatchMode').checked;
+                const name = pomo ? 'Pomodoro Session' : $('timerName').value.trim();
+
+                if (!name && !pomo) return Utils.err('Please enter activity name');
+
+                if (pomo) {
+                    const loopEnabled = $('loopEnabled').checked;
+                    State.data.timer = {
+                        running: true,
+                        start: Date.now(),
+                        planned: State.data.pomoSettings.work * 60,
+                        name: 'Pomodoro',
+                        mode: 'pomodoro',
+                        pomoEnabled: true,
+                        loop: {
+                            enabled: loopEnabled,
+                            count: loopEnabled ? int($('loopCount').value) : 1,
+                            current: 1,
+                            isRest: false
+                        }
+                    };
+                    $('timerStatus').textContent = `Work Session ${State.data.timer.loop.current}/${State.data.timer.loop.count}`;
+                } else if (isStopwatch) {
+                    State.data.timer = {
+                        running: true,
+                        start: Date.now(),
+                        planned: 0,
+                        name,
+                        mode: 'stopwatch',
+                        pomoEnabled: false
+                    };
+                    $('timerStatus').textContent = `${name} — Running`;
+                } else {
+                    const min = int($('timerDuration').value);
+                    if (!min || min < 1) return Utils.err('Duration must be at least 1 minute');
+                    State.data.timer = {
+                        running: true,
+                        start: Date.now(),
+                        planned: min * 60,
+                        name,
+                        mode: 'timer',
+                        pomoEnabled: false
+                    };
+                    $('timerStatus').textContent = `${name} — Running`;
+                }
+
+                $('timerStartBtn').style.display = 'none';
+                $('timerStopBtn').style.display = 'inline-block';
+
+                State.data.events.push({ type: 'focus', status: 'STARTED', name: State.data.timer.name, time: Date.now() });
+                State.save();
+
+                // Start both RAF and background interval
+                this.lastUpdate = performance.now();
+                this.animationLoop();
+                this.startBackgroundInterval();
+            },
+
+            animationLoop() {
+                if (!State.data.timer.running) return;
+
+                const now = performance.now();
+                // Update every ~200ms (reduce CPU usage)
+                if (now - this.lastUpdate >= 200) {
+                    this.tick();
+                    this.lastUpdate = now;
+                }
+
+                this.instance = requestAnimationFrame(() => this.animationLoop());
+            },
+
+            tick() {
+                const t = State.data.timer;
+                const elapsed = Math.floor((Date.now() - t.start) / 1000);
+
+                if (t.mode === 'stopwatch') {
+                    $('timerDisplay').textContent = Utils.fmtSW(elapsed);
+                    return;
+                }
+
+                const remaining = t.planned - elapsed;
+                if (remaining <= 0) {
+                    if (t.pomoEnabled && !t.loop.isRest) {
+                        this.startRest();
+                    } else if (t.pomoEnabled && t.loop.isRest && t.loop.current < t.loop.count) {
+                        this.nextLoop();
+                    } else {
+                        this.finish();
+                    }
+                    return;
+                }
+
+                const m = pad(Math.floor(remaining / 60)),
+                    s = pad(remaining % 60);
+                $('timerDisplay').textContent = `${m}:${s}`;
+            },
+
+            startRest() {
+                State.data.events.push({ type: 'focus', status: 'WORK_COMPLETE', duration: State.data.pomoSettings.work, time: Date.now() });
+                State.data.timer.start = Date.now();
+                State.data.timer.planned = State.data.pomoSettings.rest * 60;
+                State.data.timer.loop.isRest = true;
+                $('timerStatus').textContent = `Rest ${State.data.timer.loop.current}/${State.data.timer.loop.count}`;
+                $('timerDisplay').style.color = 'var(--info)';
+                State.save();
+                this.notify('🔥 Work Complete!', `Great job! Rest for ${State.data.pomoSettings.rest} minutes.`);
+            },
+
+            nextLoop() {
+                State.data.timer.loop.current++;
+                State.data.timer.loop.isRest = false;
+                State.data.timer.start = Date.now();
+                State.data.timer.planned = State.data.pomoSettings.work * 60;
+                $('timerStatus').textContent = `Work Session ${State.data.timer.loop.current}/${State.data.timer.loop.count}`;
+                $('timerDisplay').style.color = 'var(--success)';
+                $('loopProgress').textContent = `Loop ${State.data.timer.loop.current}/${State.data.timer.loop.count}`;
+                State.save();
+                this.notify('🔄 Next Round!', `Starting work session ${State.data.timer.loop.current}`);
+            },
+
+            stop() {
+                cancelAnimationFrame(this.instance);
+                this.stopBackgroundInterval();
+                this.releaseWakeLock();
+
+                const elapsed = Math.floor((Date.now() - State.data.timer.start) / 60000);
+                State.data.events.push({
+                    type: 'focus',
+                    status: State.data.timer.mode === 'stopwatch' ? 'FINISHED' : 'STOPPED',
+                    name: State.data.timer.name,
+                    duration: elapsed,
+                    time: Date.now()
+                });
+
+                State.data.timer.running = false;
+                $('timerStartBtn').style.display = 'inline-block';
+                $('timerStopBtn').style.display = 'none';
+                $('timerStatus').textContent = State.data.timer.mode === 'stopwatch' ? 'Completed!' : 'Stopped';
+                $('timerDisplay').textContent = '00:00';
+                $('loopProgress').textContent = '';
+
+                State.save();
+                UI.update();
+            },
+
+            finish() {
+                cancelAnimationFrame(this.instance);
+                this.stopBackgroundInterval();
+                this.releaseWakeLock();
+
+                State.data.events.push({
+                    type: 'focus',
+                    status: 'FINISHED',
+                    name: State.data.timer.name,
+                    duration: Math.floor(State.data.timer.planned / 60),
+                    time: Date.now()
+                });
+
+                State.data.timer.running = false;
+                $('timerStartBtn').style.display = 'inline-block';
+                $('timerStopBtn').style.display = 'none';
+                $('timerStatus').textContent = '🏆 Complete!';
+                $('timerDisplay').textContent = '00:00';
+                $('loopProgress').textContent = '';
+
+                this.notify('✅ Timer Complete!', `${State.data.timer.name} finished!`);
+                State.save();
+                UI.update();
+            },
+
+            async resume() {
+                await this.requestWakeLock();
+                $('timerStartBtn').style.display = 'none';
+                $('timerStopBtn').style.display = 'inline-block';
+                this.lastUpdate = performance.now();
+                this.animationLoop();
+            }
+        };
+
+        // ===== UI (SECURITY FIXES) =====
+        const UI = {
+            habitUpdateInterval: null,
+
+            renderHabits() {
+                const dash = $('habitDashboard');
+                const track = $('habitTracking');
+
+                dash.innerHTML = '';
+                track.innerHTML = '';
+
+                const today = new Date().toDateString();
+
+                Object.entries(State.data.habits).forEach(([key, habit]) => {
+                    if (!habit.enabled) return;
+
+                    const last = State.data.habitLog[key] || 0;
+                    const [t1, t2, t3] = habit.thresholds;
+
+                    // Count today's logs for this habit
+                    const todayCount = State.data.events.filter(e =>
+                        e.type === 'habit' &&
+                        e.habit === key &&
+                        new Date(e.time).toDateString() === today
+                    ).length;
+
+                    let status = 'safe', color = 'var(--success)';
+                    let displayText = '';
+                    let extraInfo = '';
+
+                    // Money tracking mode
+                    if (habit.trackingMode === 'money') {
+                        // Calculate period in days based on timePeriod setting
+                        let periodDays = 30; // default
+                        if (habit.timePeriod === 'weekly') {
+                            periodDays = 7;
+                        } else if (habit.timePeriod === 'monthly') {
+                            periodDays = 30;
+                        } else if (habit.timePeriod === 'custom' && habit.customDays) {
+                            periodDays = habit.customDays;
+                        }
+
+                        const periodStart = Date.now() - (periodDays * 86400000);
+                        const total = State.data.events
+                            .filter(e => e.type === 'habit' && e.habit === key && e.time >= periodStart && e.value)
+                            .reduce((sum, e) => sum + parseFloat(e.value || 0), 0);
+
+                        console.log(`💰 Money habit ${key}:`, { periodDays, total, events: State.data.events.filter(e => e.habit === key) });
+
+                        displayText = `$${total.toFixed(2)}`;
+
+                        // Money thresholds: t1=safe, t2=warning, t3=danger (ascending order)
+                        if (total < t1) { status = 'safe'; color = 'var(--success)'; }
+                        else if (total < t2) { status = 'warning'; color = 'var(--warning)'; }
+                        else { status = 'danger'; color = 'var(--danger)'; }
+
+                        const periodLabel = habit.timePeriod === 'weekly' ? 'This week' :
+                            habit.timePeriod === 'monthly' ? 'This month' :
+                                `Last ${periodDays} days`;
+                        extraInfo = `<div style="font-size:12px; color:var(--text-dim); margin-top:4px;">${periodLabel}</div>`;
+                    }
+                    // Time tracking mode
+                    else {
+                        const hours = last ? (Date.now() - last) / 3600000 : 999;
+
+                        // Time thresholds: t1=safe, t2=warning, t3=danger (descending order for display)
+                        // Positive habits (inverted logic - good when done recently)
+                        if (habit.isPositive) {
+                            if (hours > t3) { status = 'danger'; color = 'var(--danger)'; }
+                            else if (hours > t2) { status = 'warning'; color = 'var(--warning)'; }
+                            else { status = 'safe'; color = 'var(--success)'; }
+                        }
+                        // Negative habits (normal logic - bad when done recently)
+                        else {
+                            // thresholds are stored as [danger, warning, safe] for time-based habits
+                            if (hours < t1) { status = 'danger'; color = 'var(--danger)'; }
+                            else if (hours < t2) { status = 'warning'; color = 'var(--warning)'; }
+                            else { status = 'safe'; color = 'var(--success)'; }
+                        }
+
+                        displayText = last ? Utils.fmt(Date.now() - last) : '--:--';
+
+                        // Show spending total if there's any spending data (regardless of toggle)
+                        const monthlySpending = State.data.events
+                            .filter(e => e.type === 'habit' && e.habit === key && e.value &&
+                                e.time >= Date.now() - (30 * 86400000))
+                            .reduce((sum, e) => sum + parseFloat(e.value || 0), 0);
+
+                        if (monthlySpending > 0) {
+                            extraInfo = `<div style="font-size:14px; color:var(--info); margin-top:8px; text-align:center;">💰 $${monthlySpending.toFixed(2)} this month</div>`;
+                        }
+                    }
+
+                    // Add today's count badge
+                    const countBadge = todayCount > 0
+                        ? `<div style="position:absolute; top:12px; right:12px; background:var(--primary); color:white; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:bold;">
+                            ×${todayCount}
+                           </div>`
+                        : '';
+
+                    let buttonText = habit.trackingMode === 'money' ? 'LOG SPENDING' : `LOG ${habit.name.split(' ')[1]?.toUpperCase() || 'IT'}`;
+
+                    // Create DOM element
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = `habit-card ${last || habit.trackingMode === 'money' ? 'active' : ''}`;
+                    cardDiv.dataset.habit = key;
+                    cardDiv.style.position = 'relative';
+                    cardDiv.innerHTML = `
+                        ${countBadge}
+                        <h3 style="text-align:center; margin-bottom:12px;">${habit.icon} ${habit.name}</h3>
+                        <div class="habit-status ${status}" style="color:${color}; text-align:center;">
+                            ${displayText}
+                        </div>
+                        ${extraInfo}
+                        <button class="btn btn-primary" data-log-habit="${key}">
+                            ${buttonText}
+                        </button>
+                    `;
+
+                    dash.appendChild(cardDiv);
+                    track.appendChild(cardDiv.cloneNode(true));
+                });
+
+                this.attachHabitListeners();
+            },
+
+            updateHabitTimers() {
+                document.querySelectorAll('.habit-card').forEach(card => {
+                    const key = card.dataset.habit;
+                    const habit = State.data.habits[key];
+                    const statusDiv = card.querySelector('.habit-status');
+
+                    if (!statusDiv) return;
+
+                    if (habit && habit.isMoneyOnly) {
+                        // Update money total
+                        const total = State.getMonthlyTotal(key);
+                        statusDiv.textContent = `$${total.toFixed(2)}`;
+                    } else {
+                        // Update time since last log
+                        const last = State.data.habitLog[key] || 0;
+                        if (last) {
+                            statusDiv.textContent = Utils.fmt(Date.now() - last);
+                        }
+                    }
+                });
+            },
+
+            attachHabitListeners() {
+                // Remove old listeners to prevent duplicates
+                document.querySelectorAll('[data-log-habit]').forEach(btn => {
+                    btn.replaceWith(btn.cloneNode(true));
+                });
+
+                // Add new listeners with delegation
+                document.querySelectorAll('[data-log-habit]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        Actions.logHabit(btn.dataset.logHabit);
+                    });
+                });
+            },
+
+            renderWins(filter = 'all') {
+                const feed = $('winsFeed');
+                const wins = State.data.events.filter(e => e.type === 'win' && (filter === 'all' || e.category === filter));
+
+                feed.innerHTML = wins.length === 0 ? '<p style="text-align:center; color:var(--text-dim);">No wins yet. Start logging your victories!</p>' : '';
+
+                wins.sort((a, b) => b.time - a.time).slice(0, 100).forEach(w => {
+                    const catClass = `cat-${w.category || 'other'}`;
+                    const catLabel = (w.category || 'other').toUpperCase();
+                    const div = document.createElement('div');
+                    div.className = 'entry';
+                    div.style.borderLeftColor = 'var(--warning)';
+
+                    const safeNote = document.createElement('span');
+                    safeNote.textContent = w.note;
+
+                    const contentDiv = document.createElement('div');
+                    contentDiv.style.flex = '1';
+                    contentDiv.innerHTML = `
+                        <span class="win-category ${catClass}">${catLabel}</span>
+                        <b>${new Date(w.time).toLocaleString()}</b><br>
+                    `;
+                    contentDiv.appendChild(safeNote);
+
+                    // FIX #1: Use event listener instead of onclick
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'entry-delete';
+                    deleteBtn.textContent = '✕';
+                    deleteBtn.addEventListener('click', () => Actions.deleteEvent(w.time));
+
+                    div.appendChild(contentDiv);
+                    div.appendChild(deleteBtn);
+                    feed.appendChild(div);
+                });
+
+                // Calculate streak
+                const today = new Date().setHours(0, 0, 0, 0);
+                let streak = 0;
+                for (let i = 0; i < 365; i++) {
+                    const day = today - (i * 86400000);
+                    const hasWin = State.data.events.some(e => e.type === 'win' && new Date(e.time).setHours(0, 0, 0, 0) === day);
+                    if (hasWin) streak++;
+                    else break;
+                }
+                $('winStreak').textContent = streak;
+            },
+
+            renderHistory(filter = 'all') {
+                const feed = $('historyFeed');
+                let events = filter === 'all' ? State.data.events : State.data.events.filter(e => e.type === filter);
+                events = events.slice(-500);
+
+                feed.innerHTML = '';
+                events.sort((a, b) => b.time - a.time).forEach(e => {
+                    const div = document.createElement('div');
+                    div.className = 'entry';
+
+                    let text = '';
+                    if (e.type === 'habit') {
+                        const habit = State.data.habits[e.habit];
+                        let extra = '';
+                        if (e.value) extra += ` <strong style="color:var(--warning);">$${e.value.toFixed(2)}</strong>`;
+                        if (e.spendingNote) {
+                            const safeSpending = document.createElement('span');
+                            safeSpending.textContent = e.spendingNote;
+                            extra += ` on ${safeSpending.textContent}`;
+                        }
+                        if (e.duration) extra += ` (${e.duration}min)`;
+                        if (e.note) {
+                            const safeNote = document.createElement('span');
+                            safeNote.textContent = e.note;
+                            extra += ` - ${safeNote.textContent}`;
+                        }
+                        text = `${habit?.icon || '📌'} ${habit?.name || e.habit} logged${extra}`;
+                    } else if (e.type === 'focus') {
+                        // FIX: Sanitize e.name
+                        const safeName = document.createElement('span');
+                        safeName.textContent = e.name;
+                        text = `⏱️ ${e.status}: ${safeName.textContent} (${e.duration || 0}min)`;
+                    } else if (e.type === 'win') {
+                        const safeNote = document.createElement('span');
+                        safeNote.textContent = e.note;
+                        text = `🏆 Win: ${safeNote.textContent}`;
+                    }
+
+                    const contentDiv = document.createElement('div');
+                    contentDiv.style.flex = '1';
+                    contentDiv.innerHTML = `<b>${new Date(e.time).toLocaleString()}</b> — ${text}`;
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'entry-delete';
+                    deleteBtn.textContent = '✕';
+                    deleteBtn.addEventListener('click', () => Actions.deleteEvent(e.time));
+
+                    div.appendChild(contentDiv);
+                    div.appendChild(deleteBtn);
+                    feed.appendChild(div);
+                });
+            },
+
+            updateDashboard() {
+                const today = new Date().toDateString();
+                const todayEvents = State.data.events.filter(e => new Date(e.time).toDateString() === today);
+
+                $('dailyWins').textContent = todayEvents.filter(e => e.type === 'win').length;
+
+                const focusHours = todayEvents
+                    .filter(e => e.type === 'focus' && e.status === 'FINISHED')
+                    .reduce((sum, e) => sum + (e.duration || 0), 0) / 60;
+                $('dailyFocus').textContent = focusHours.toFixed(1);
+
+                // Count unique habits logged today (not total logs)
+                const uniqueHabits = new Set(todayEvents.filter(e => e.type === 'habit').map(e => e.habit));
+                $('dailyHabits').textContent = uniqueHabits.size;
+
+                // Calculate spending totals
+                const dailySpending = todayEvents
+                    .filter(e => e.type === 'habit' && e.value)
+                    .reduce((sum, e) => sum + parseFloat(e.value || 0), 0);
+
+                const weekStart = Date.now() - (7 * 86400000);
+                const weeklySpending = State.data.events
+                    .filter(e => e.type === 'habit' && e.value && e.time >= weekStart)
+                    .reduce((sum, e) => sum + parseFloat(e.value || 0), 0);
+
+                const monthStart = Date.now() - (30 * 86400000);
+                const monthlySpending = State.data.events
+                    .filter(e => e.type === 'habit' && e.value && e.time >= monthStart)
+                    .reduce((sum, e) => sum + parseFloat(e.value || 0), 0);
+
+                // Update overview display
+                const overviewText = document.querySelector('#dash .card p');
+                if (overviewText) {
+                    let spendingHTML = '';
+                    if (dailySpending > 0 || weeklySpending > 0 || monthlySpending > 0) {
+                        spendingHTML = `<br><div style="margin-top:12px; padding:12px; background:var(--bg-light); border-radius:8px; border:2px solid var(--warning);">
+                            <div style="font-weight:600; color:var(--warning); margin-bottom:8px;">💰 Spending Tracker</div>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:8px; font-size:14px;">
+                                <div><strong>Today:</strong> $${dailySpending.toFixed(2)}</div>
+                                <div><strong>Week:</strong> $${weeklySpending.toFixed(2)}</div>
+                                <div><strong>Month:</strong> $${monthlySpending.toFixed(2)}</div>
+                            </div>
+                        </div>`;
+                    }
+
+                    overviewText.innerHTML = `
+                        <span id="dailyWins">${todayEvents.filter(e => e.type === 'win').length}</span> Wins •
+                        <span id="dailyFocus">${focusHours.toFixed(1)}</span> Focus Hours •
+                        <span id="dailyHabits">${uniqueHabits.size}</span> Unique Habits
+                        ${spendingHTML}
+                    `;
+                }
+            },
+
+            update() {
+                this.renderHabits();
+                this.updateDashboard();
+            },
+
+            // FIX #4: Start habit refresh interval
+            startHabitRefresh() {
+                this.stopHabitRefresh();
+                this.habitUpdateInterval = setInterval(() => {
+                    if (!document.hidden) {
+                        this.updateHabitTimers();
+                    }
+                }, 60000);
+            },
+
+            // FIX #4: Stop habit refresh interval
+            stopHabitRefresh() {
+                if (this.habitUpdateInterval) {
+                    clearInterval(this.habitUpdateInterval);
+                    this.habitUpdateInterval = null;
+                }
+            }
+        };
+
+        // ===== STATISTICS =====
+        const Statistics = {
+            renderStats() {
+                const today = new Date().toDateString();
+                const weekStart = Date.now() - (7 * 86400000);
+                const monthStart = Date.now() - (30 * 86400000);
+
+                // Calculate spending totals
+                const todayEvents = State.data.events.filter(e =>
+                    e.type === 'habit' && e.value && new Date(e.time).toDateString() === today
+                );
+                const weekEvents = State.data.events.filter(e =>
+                    e.type === 'habit' && e.value && e.time >= weekStart
+                );
+                const monthEvents = State.data.events.filter(e =>
+                    e.type === 'habit' && e.value && e.time >= monthStart
+                );
+
+                const todayTotal = todayEvents.reduce((sum, e) => sum + parseFloat(e.value || 0), 0);
+                const weekTotal = weekEvents.reduce((sum, e) => sum + parseFloat(e.value || 0), 0);
+                const monthTotal = monthEvents.reduce((sum, e) => sum + parseFloat(e.value || 0), 0);
+
+                $('statsToday').textContent = `$${todayTotal.toFixed(2)}`;
+                $('statsWeek').textContent = `$${weekTotal.toFixed(2)}`;
+                $('statsMonth').textContent = `$${monthTotal.toFixed(2)}`;
+
+                // Calculate spending by habit
+                const habitSpending = {};
+                monthEvents.forEach(e => {
+                    if (!habitSpending[e.habit]) {
+                        habitSpending[e.habit] = 0;
+                    }
+                    habitSpending[e.habit] += parseFloat(e.value || 0);
+                });
+
+                // Sort by spending
+                const sorted = Object.entries(habitSpending)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 10);
+
+                // Render pie chart
+                this.renderPieChart(sorted);
+
+                // Render top habits list
+                const topHabits = $('topHabits');
+                topHabits.innerHTML = '';
+                if (sorted.length === 0) {
+                    topHabits.innerHTML = '<p style="text-align:center; color:var(--text-dim);">No spending data yet</p>';
+                } else {
+                    sorted.forEach(([key, amount], index) => {
+                        const habit = State.data.habits[key];
+                        const div = document.createElement('div');
+                        div.style.display = 'flex';
+                        div.style.justifyContent = 'space-between';
+                        div.style.alignItems = 'center';
+                        div.style.padding = '12px';
+                        div.style.background = 'var(--bg-light)';
+                        div.style.borderRadius = '8px';
+                        div.style.marginBottom = '8px';
+                        div.style.borderLeft = `4px solid ${this.getChartColor(index)}`;
+
+                        const nameSpan = document.createElement('span');
+                        nameSpan.textContent = `${habit?.icon || '📌'} ${habit?.name || key}`;
+                        nameSpan.style.fontWeight = '600';
+
+                        const amountSpan = document.createElement('span');
+                        amountSpan.textContent = `$${amount.toFixed(2)}`;
+                        amountSpan.style.color = 'var(--warning)';
+                        amountSpan.style.fontWeight = 'bold';
+                        amountSpan.style.fontSize = '18px';
+
+                        div.appendChild(nameSpan);
+                        div.appendChild(amountSpan);
+                        topHabits.appendChild(div);
+                    });
+                }
+
+                // Focus time summary
+                const focusEvents = State.data.events.filter(e =>
+                    e.type === 'focus' && e.status === 'FINISHED' && e.time >= monthStart
+                );
+                const totalFocusMin = focusEvents.reduce((sum, e) => sum + (e.duration || 0), 0);
+                const totalFocusHours = (totalFocusMin / 60).toFixed(1);
+                const avgSessionMin = focusEvents.length > 0 ? (totalFocusMin / focusEvents.length).toFixed(0) : 0;
+
+                const focusSummary = $('focusSummary');
+                focusSummary.innerHTML = `
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px;">
+                        <div style="background:var(--bg-light); padding:12px; border-radius:8px; text-align:center;">
+                            <div style="font-size:24px; font-weight:bold; color:var(--success);">${totalFocusHours}h</div>
+                            <div style="font-size:12px; color:var(--text-dim);">Total Focus Time</div>
+                        </div>
+                        <div style="background:var(--bg-light); padding:12px; border-radius:8px; text-align:center;">
+                            <div style="font-size:24px; font-weight:bold; color:var(--info);">${focusEvents.length}</div>
+                            <div style="font-size:12px; color:var(--text-dim);">Sessions Completed</div>
+                        </div>
+                        <div style="background:var(--bg-light); padding:12px; border-radius:8px; text-align:center;">
+                            <div style="font-size:24px; font-weight:bold; color:var(--warning);">${avgSessionMin}m</div>
+                            <div style="font-size:12px; color:var(--text-dim);">Avg Session Length</div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderPieChart(data) {
+                const canvas = $('spendingChart');
+                const ctx = canvas.getContext('2d');
+                const legend = $('chartLegend');
+
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                legend.innerHTML = '';
+
+                if (data.length === 0) {
+                    ctx.fillStyle = '#a0a8c0';
+                    ctx.font = '14px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('No spending data', canvas.width / 2, canvas.height / 2);
+                    return;
+                }
+
+                const total = data.reduce((sum, [_, val]) => sum + val, 0);
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const radius = Math.min(centerX, centerY) - 10;
+
+                let currentAngle = -Math.PI / 2;
+
+                data.forEach(([key, amount], index) => {
+                    const habit = State.data.habits[key];
+                    const sliceAngle = (amount / total) * 2 * Math.PI;
+                    const color = this.getChartColor(index);
+
+                    // Draw slice
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                    ctx.closePath();
+                    ctx.fillStyle = color;
+                    ctx.fill();
+                    ctx.strokeStyle = '#0a0e27';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    currentAngle += sliceAngle;
+
+                    // Add to legend
+                    const legendItem = document.createElement('div');
+                    legendItem.style.display = 'flex';
+                    legendItem.style.alignItems = 'center';
+                    legendItem.style.justifyContent = 'space-between';
+                    legendItem.style.gap = '8px';
+                    legendItem.style.padding = '8px';
+                    legendItem.style.background = '#151b3d';
+                    legendItem.style.borderRadius = '6px';
+                    legendItem.style.marginBottom = '6px';
+
+                    const leftPart = document.createElement('div');
+                    leftPart.style.display = 'flex';
+                    leftPart.style.alignItems = 'center';
+                    leftPart.style.gap = '8px';
+                    leftPart.style.flex = '1';
+                    leftPart.style.minWidth = '0';
+
+                    const colorBox = document.createElement('div');
+                    colorBox.style.width = '12px';
+                    colorBox.style.height = '12px';
+                    colorBox.style.background = color;
+                    colorBox.style.borderRadius = '2px';
+                    colorBox.style.flexShrink = '0';
+
+                    const label = document.createElement('span');
+                    label.style.fontSize = '12px';
+                    label.style.overflow = 'hidden';
+                    label.style.textOverflow = 'ellipsis';
+                    label.style.whiteSpace = 'nowrap';
+                    label.textContent = `${habit?.icon || '📌'} ${habit?.name || key}`;
+
+                    const amountSpan = document.createElement('span');
+                    amountSpan.style.fontSize = '13px';
+                    amountSpan.style.fontWeight = 'bold';
+                    amountSpan.style.color = '#f5a623';
+                    amountSpan.style.flexShrink = '0';
+                    amountSpan.textContent = `$${amount.toFixed(2)}`;
+
+                    leftPart.appendChild(colorBox);
+                    leftPart.appendChild(label);
+                    legendItem.appendChild(leftPart);
+                    legendItem.appendChild(amountSpan);
+                    legend.appendChild(legendItem);
+                });
+            },
+
+            getChartColor(index) {
+                const colors = [
+                    '#e74c3c', '#f5a623', '#50c878', '#4a90e2', '#9b59b6',
+                    '#1abc9c', '#e67e22', '#3498db', '#e91e63', '#00bcd4'
+                ];
+                return colors[index % colors.length];
+            }
+        };
+
+        // ===== ACTIONS =====
+        const Actions = {
+            logHabit(key) {
+                const habit = State.data.habits[key];
+                let note = null, value = null;
+
+                console.log('🔍 Logging habit:', key, 'Config:', habit);
+
+                // For money tracking habits: ask note first (what was it for?), then amount
+                if (habit.trackingMode === 'money') {
+                    // Step 1: Ask what it was for (only if note checkbox was enabled)
+                    if (habit.note) {
+                        note = prompt('What did you spend on?');
+                        if (note === null) return; // User cancelled
+                        console.log('📝 Note:', note);
+                    }
+
+                    // Step 2: Ask for amount (required)
+                    const input = prompt('How much did you spend? ($)');
+                    if (input === null || input.trim() === '') return; // User cancelled or empty
+
+                    value = parseFloat(input.trim());
+                    if (isNaN(value) || value < 0) {
+                        Utils.err('Please enter a valid amount');
+                        return;
+                    }
+                    console.log('💵 Value:', value);
+                }
+                // For time tracking habits: ask note first if enabled, then optional spending
+                else {
+                    // Step 1: Ask for note if enabled
+                    if (habit.note) {
+                        note = prompt(`Note for ${habit.name}:`);
+                        if (note === null) return; // User cancelled
+                        console.log('📝 Note:', note);
+                    }
+
+                    // Step 2: Ask for spending if enabled (optional)
+                    if (habit.trackSpending) {
+                        console.log('💰 Asking for spending...');
+                        const input = prompt('How much did you spend? ($)\n\nPress Cancel to skip if nothing.');
+
+                        if (input !== null && input.trim() !== '') {
+                            value = parseFloat(input.trim());
+                            if (isNaN(value) || value < 0) {
+                                Utils.err('Please enter a valid amount');
+                                return;
+                            }
+                            console.log('💵 Value:', value);
+                        }
+                    }
+                }
+
+                // Step 3: Log the habit
+                const now = Date.now();
+
+                // Update timestamp only for time-based habits
+                if (habit.trackingMode === 'time') {
+                    State.data.habitLog[key] = now;
+                }
+
+                State.data.events.push({
+                    type: 'habit',
+                    habit: key,
+                    value: value || null,
+                    note: note || null,
+                    time: now
+                });
+
+                // Auto-save every habit log
+                State.save();
+                UI.update();
+            },
+
+            logWin() {
+                const category = $('winCategory').value;
+                const input = $('winInput').value.trim();
+
+                if (!input) return Utils.err('Win description cannot be empty');
+
+                const now = Date.now();
+                State.data.events.push({
+                    type: 'win',
+                    category,
+                    note: input,
+                    time: now
+                });
+
+                // Update streak
+                const today = new Date().setHours(0, 0, 0, 0);
+                let streak = 0;
+                for (let i = 0; i < 365; i++) {
+                    const day = today - (i * 86400000);
+                    const hasWin = State.data.events.some(e => e.type === 'win' && new Date(e.time).setHours(0, 0, 0, 0) === day);
+                    if (hasWin) streak++;
+                    else break;
+                }
+                $('winStreak').textContent = streak;
+
+                // Close modal and clear input
+                $('winInput').value = '';
+                Modal.close();
+                State.save();
+                UI.update();
+
+                // Refresh wins tab if currently active
+                const currentTab = document.querySelector('.tab-btn.active')?.dataset.tab;
+                if (currentTab === 'wins') UI.renderWins();
+            },
+
+            deleteEvent(time) {
+                if (!confirm('Delete this entry?')) return;
+
+                const index = State.data.events.findIndex(e => e.time === time);
+                if (index !== -1) {
+                    State.data.events.splice(index, 1);
+                    State.save();
+
+                    // Re-render current view
+                    const currentTab = document.querySelector('.tab-btn.active').dataset.tab;
+                    if (currentTab === 'wins') UI.renderWins();
+                    if (currentTab === 'hist') UI.renderHistory();
+                    if (currentTab === 'dash') UI.update();
+                }
+            },
+
+            createCustomHabit() {
+                const name = $('customHabitName').value.trim();
+                const icon = $('customHabitIcon').value.trim() || '📌';
+                const t1 = parseInt($('customThreshold1').value) || 1;
+                const t2 = parseInt($('customThreshold2').value) || 2;
+                const t3 = parseInt($('customThreshold3').value) || 4;
+                const hasNote = $('customHabitNote').checked;
+                const hasSpending = $('customHabitSpendingCheck').checked;
+                const isMoneyTracking = $('customHabitSpending').checked;
+                const isPositive = $('customHabitPositive').checked;
+                const timePeriod = $('timePeriod').value;
+                const customDays = parseInt($('customDays').value) || 30;
+
+                if (!name) {
+                    Utils.err('Please enter a habit name');
+                    return;
+                }
+
+                if (name.length < 3) {
+                    Utils.err('Habit name must be at least 3 characters');
+                    return;
+                }
+
+                // Create unique key from name
+                const key = 'custom_' + name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+
+                // Check if already exists
+                if (State.data.habits[key]) {
+                    Utils.err('A habit with this name already exists');
+                    return;
+                }
+
+                const trackingMode = isMoneyTracking ? 'money' : 'time';
+
+                // For money mode, thresholds are stored in reverse order due to visual swap
+                // t3 is Safe (lowest), t2 is Warning, t1 is Danger (highest)
+                let thresholds;
+                if (isMoneyTracking) {
+                    // Validate ascending: Safe < Warning < Danger
+                    if (t3 >= t2 || t2 >= t1) {
+                        Utils.err(`Thresholds must be in ascending order: Safe < Warning < Danger (e.g., $100, $200, $300)`);
+                        return;
+                    }
+                    thresholds = [t3, t2, t1]; // Store as [Safe, Warning, Danger] = [100, 200, 300]
+                } else {
+                    // Validate ascending: Danger < Warning < Safe
+                    if (t1 >= t2 || t2 >= t3) {
+                        Utils.err(`Thresholds must be in ascending order (e.g., 1hr, 2hr, 4hr)`);
+                        return;
+                    }
+                    thresholds = [t1, t2, t3]; // Store as [Danger, Warning, Safe] = [1, 2, 4]
+                }
+
+                // Calculate period in days
+                let periodDays = 30;
+                if (isMoneyTracking) {
+                    if (timePeriod === 'weekly') periodDays = 7;
+                    else if (timePeriod === 'monthly') periodDays = 30;
+                    else periodDays = customDays;
+                }
+
+                // Create new habit
+                State.data.habits[key] = {
+                    name: `${icon} ${name}`,
+                    icon: icon,
+                    enabled: true,
+                    thresholds: thresholds,
+                    note: hasNote,
+                    trackSpending: hasSpending,
+                    trackingMode: trackingMode,
+                    isPositive: isPositive,
+                    timePeriod: isMoneyTracking ? timePeriod : null,
+                    customDays: isMoneyTracking ? periodDays : null,
+                    isCustom: true
+                };
+
+                State.save();
+                UI.update();
+
+                Modal.close();
+
+                // Clear form after a short delay (wait for modal to start closing)
+                setTimeout(() => {
+                    $('customHabitName').value = '';
+                    $('customHabitIcon').selectedIndex = 0; // Reset dropdown to first option
+                    $('customThreshold1').value = '1';
+                    $('customThreshold2').value = '2';
+                    $('customThreshold3').value = '4';
+                    $('customHabitNote').checked = false;
+                    $('customHabitSpendingCheck').checked = false;
+                    $('customHabitSpending').checked = false;
+                    $('customHabitPositive').checked = false;
+                    $('timePeriodSection').style.display = 'none';
+                    $('customHabitPositive').parentElement.style.display = 'flex'; // Show positive habit checkbox
+
+                    // Reset to time mode display
+                    const title = $('thresholdTitle');
+                    title.textContent = '⏱️ Time Thresholds (hours):';
+                    const thresholdGrid = $('timeThresholdsSection').querySelector('div');
+                    thresholdGrid.innerHTML = '';
+                    thresholdGrid.appendChild($('threshold1Container'));
+                    thresholdGrid.appendChild($('threshold2Container'));
+                    thresholdGrid.appendChild($('threshold3Container'));
+                    $('label1').textContent = '🔴 Danger';
+                    $('label2').textContent = '⚠️ Warning';
+                    $('label3').textContent = '✅ Safe';
+                }, 350);
+
+                Utils.err('✅ Custom habit created successfully!');
+
+                // Switch to settings tab to show the new habit
+                document.querySelector('[data-tab="settings"]').click();
+                renderSettings(); // Refresh settings view to show new habit
+            }
+        };
+
+        // ===== SETTINGS =====
+        const Settings = {
+            saveHabits() {
+                const habitElements = document.querySelectorAll('.habit-config-item');
+                habitElements.forEach(el => {
+                    const key = el.dataset.habit;
+                    const enabled = el.querySelector('input[type="checkbox"]').checked;
+                    const nums = Array.from(el.querySelectorAll('input[type="number"]'))
+                        .map(i => parseInt(i.value, 10))
+                        .filter(v => !isNaN(v));
+
+                    if (State.data.habits[key]) {
+                        const habit = State.data.habits[key];
+                        State.data.habits[key].enabled = enabled;
+
+                        if (nums.length === 3) {
+                            const [a, b, c] = nums; // visual order per habit type
+                            let mapped;
+                            if (habit.trackingMode === 'money') {
+                                // UI shows Safe, Warning, Danger → store [safe, warning, danger]
+                                mapped = [a, b, c];
+                            } else if (habit.isPositive) {
+                                // UI shows Safe, Warning, Danger → store [danger, warning, safe]
+                                mapped = [c, b, a];
+                            } else {
+                                // UI shows Danger, Warning, Safe → store [danger, warning, safe]
+                                mapped = [a, b, c];
+                            }
+                            State.data.habits[key].thresholds = mapped;
+                        }
+                    }
+                });
+
+                State.save();
+                UI.update();
+                Utils.err('✅ Settings saved successfully!');
+            },
+
+            saveSoundSettings() {
+                Sound.settings.type = $('soundType').value;
+                Sound.settings.volume = $('volumeSlider').value / 100;
+                Sound.settings.repeat = $('soundRepeat').value;
+
+                Sound.saveSettings();
+                Utils.err('✅ Sound settings saved!');
+            },
+
+            testSound() {
+                Sound.play(1200, 0.3);
+            },
+
+            clearAll() {
+                if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                    localStorage.clear();
+                    indexedDB.deleteDatabase('EternalForge');
+                    location.reload();
+                }
+            }
+        };
+
+        // ===== BACKUP =====
+        const Backup = {
+            export() {
+                const dataStr = JSON.stringify(State.data, null, 4);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `champion_forge_backup_${Date.now()}.json`;
+                a.click();
+
+                URL.revokeObjectURL(url);
+            },
+
+            import() {
+                const fileInput = $('importFile');
+                fileInput.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        try {
+                            const data = JSON.parse(evt.target.result);
+
+                            // Validate data structure
+                            if (!data.events || !Array.isArray(data.events)) {
+                                Utils.err('Invalid backup file format');
+                                return;
+                            }
+
+                            // Merge data
+                            State.data = { ...State.data, ...data };
+                            State.save();
+                            UI.update();
+                            Utils.err('✅ Backup imported successfully!');
+                        } catch (err) {
+                            console.error('Import error:', err);
+                            Utils.err('Failed to import backup file');
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                fileInput.click();
+            }
+        };
+
+        // ===== MODAL =====
+        const Modal = {
+            open(id) {
+                const modal = $(id + 'Modal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    setTimeout(() => modal.classList.add('show'), 10);
+                }
+            },
+
+            close() {
+                document.querySelectorAll('.modal').forEach(m => {
+                    m.classList.remove('show');
+                    setTimeout(() => { m.style.display = 'none'; }, 300);
+                });
+            }
+        };
+
+        // App initialization
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load settings
+            Sound.loadSettings();
+            const wakeLockSaved = localStorage.getItem('wakeLockEnabled');
+            Timer.wakeLockEnabled = wakeLockSaved === 'true';
+            $('wakeLockToggle').checked = Timer.wakeLockEnabled;
+            const savedVolume = localStorage.getItem('volume');
+            if (savedVolume) {
+                $('volumeSlider').value = savedVolume;
+                Sound.settings.volume = savedVolume / 100;
+            }
+
+            // Initialize database
+            await DB.init();
+
+            // Load state
+            State.load().then(() => {
+                UI.update();
+                // Start habit refresh interval
+                UI.startHabitRefresh();
+            });
+        });
+
+        // ===== TAB NAVIGATION =====
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                if (!tab) return;
+
+                // Update active button
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Show selected page
+                document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+                const page = $(tab);
+                if (page) {
+                    page.style.display = 'block';
+
+                    // Render content when switching to specific tabs
+                    if (tab === 'wins') UI.renderWins();
+                    if (tab === 'hist') UI.renderHistory();
+                    if (tab === 'settings') renderSettings();
+                }
+            });
+        });
+
+        // ===== WIN FILTER NAVIGATION =====
+        document.querySelectorAll('[data-win-filter]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const filter = btn.dataset.winFilter;
+                document.querySelectorAll('[data-win-filter]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                UI.renderWins(filter);
+            });
+        });
+
+        // ===== HISTORY TAB NAVIGATION =====
+        document.querySelectorAll('[data-history-tab]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.historyTab;
+                document.querySelectorAll('[data-history-tab]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                if (tab === 'events') {
+                    $('historyEvents').style.display = 'block';
+                    $('historyStats').style.display = 'none';
+                } else if (tab === 'stats') {
+                    $('historyEvents').style.display = 'none';
+                    $('historyStats').style.display = 'block';
+                    Statistics.renderStats();
+                }
+            });
+        });
+
+        // ===== HISTORY FILTER NAVIGATION =====
+        document.querySelectorAll('[data-filter]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const filter = btn.dataset.filter;
+                document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                UI.renderHistory(filter);
+            });
+        });
+
+        // ===== LOOP TIMER TOGGLE =====
+        $('loopEnabled').addEventListener('change', (e) => {
+            $('loopSettings').style.display = e.target.checked ? 'block' : 'none';
+        });
+
+        // ===== STOPWATCH MODE TOGGLE =====
+        $('stopwatchMode').addEventListener('change', (e) => {
+            $('timerMinutes').style.display = e.target.checked ? 'none' : 'block';
+        });
+
+        // ===== TIMER DURATION INPUT LIVE UPDATE =====
+        $('timerDuration').addEventListener('input', (e) => {
+            const minutes = parseInt(e.target.value) || 0;
+            if (minutes > 0 && !State.data.timer.running) {
+                $('timerDisplay').textContent = `${pad(minutes)}:00`;
+            }
+        });
+
+        // ===== WAKE LOCK TOGGLE =====
+        $('wakeLockToggle').addEventListener('change', (e) => {
+            Timer.wakeLockEnabled = e.target.checked;
+            localStorage.setItem('wakeLockEnabled', e.target.checked);
+            Utils.err(`✅ Wake Lock ${e.target.checked ? 'enabled' : 'disabled'}`);
+        });
+
+        // ===== VOLUME SLIDER =====
+        $('volumeSlider').addEventListener('input', (e) => {
+            $('volumeDisplay').textContent = e.target.value + '%';
+            Sound.settings.volume = e.target.value / 100;
+        });
+
+        // ===== CLOSE MODAL ON BACKGROUND CLICK =====
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) Modal.close();
+            });
+        });
+
+        // ===== CUSTOM HABIT MODAL TOGGLES =====
+        $('customHabitSpending').addEventListener('change', (e) => {
+            const isMoneyMode = e.target.checked;
+
+            // Show/hide period selection
+            $('timePeriodSection').style.display = isMoneyMode ? 'block' : 'none';
+
+            // Show/hide positive habit checkbox (can't be positive when tracking money)
+            $('customHabitPositive').parentElement.style.display = isMoneyMode ? 'none' : 'flex';
+            if (isMoneyMode) $('customHabitPositive').checked = false;
+
+            // Auto-check spending amount
+            $('customHabitSpendingCheck').checked = isMoneyMode;
+
+            // Update threshold title
+            const title = $('thresholdTitle');
+            const thresholdGrid = $('timeThresholdsSection').querySelector('div');
+            const container1 = $('threshold1Container');
+            const container2 = $('threshold2Container');
+            const container3 = $('threshold3Container');
+
+            if (isMoneyMode) {
+                // Money mode: Swap visual order to Green -> Yellow -> Red
+                title.textContent = '💰 Money Thresholds ($):';
+
+                // Rearrange DOM order
+                thresholdGrid.innerHTML = '';
+                thresholdGrid.appendChild(container3); // Safe (green) first
+                thresholdGrid.appendChild(container2); // Warning (yellow) second
+                thresholdGrid.appendChild(container1); // Danger (red) last
+
+                // Update labels
+                $('label1').textContent = '🔴 Danger ($)';
+                $('label2').textContent = '⚠️ Warning ($)';
+                $('label3').textContent = '✅ Safe ($)';
+
+                // Set money values to match visual order after DOM swap
+                // container3 (Safe) appears first, container2 (Warning) second, container1 (Danger) last
+                $('customThreshold3').value = '100';  // Safe (green) - lowest threshold
+                $('customThreshold2').value = '200';  // Warning (yellow) - middle threshold
+                $('customThreshold1').value = '300';  // Danger (red) - highest threshold
+            } else {
+                // Time mode: Standard order Red -> Yellow -> Green
+                title.textContent = '⏱️ Time Thresholds (hours):';
+
+                // Restore DOM order
+                thresholdGrid.innerHTML = '';
+                thresholdGrid.appendChild(container1); // Danger (red) first
+                thresholdGrid.appendChild(container2); // Warning (yellow) second
+                thresholdGrid.appendChild(container3); // Safe (green) last
+
+                // Update labels
+                $('label1').textContent = '🔴 Danger';
+                $('label2').textContent = '⚠️ Warning';
+                $('label3').textContent = '✅ Safe';
+
+                // Set time values
+                $('customThreshold1').value = '1';
+                $('customThreshold2').value = '2';
+                $('customThreshold3').value = '4';
+            }
+        });
+
+        $('timePeriod').addEventListener('change', (e) => {
+            $('customDaysInput').style.display = e.target.value === 'custom' ? 'block' : 'none';
+        });
+
+        // Positive habit toggle
+        $('customHabitPositive').addEventListener('change', (e) => {
+            const isPositive = e.target.checked;
+            const isMoneyMode = $('customHabitSpending').checked;
+
+            // Don't change anything if money mode is active
+            if (isMoneyMode) return;
+
+            const label1 = $('label1');
+            const label2 = $('label2');
+            const label3 = $('label3');
+            const input1 = $('customThreshold1');
+            const input2 = $('customThreshold2');
+            const input3 = $('customThreshold3');
+
+            if (isPositive) {
+                // Positive: Good when done recently (reverse colors)
+                label1.innerHTML = '✅ Safe';
+                label1.style.color = 'var(--success)';
+                label2.innerHTML = '⚠️ Warning';
+                label2.style.color = 'var(--warning)';
+                label3.innerHTML = '🔴 Danger';
+                label3.style.color = 'var(--danger)';
+
+                input1.value = '1';
+                input2.value = '2';
+                input3.value = '4';
+            } else {
+                // Negative: Bad when done recently (normal)
+                label1.innerHTML = '🔴 Danger';
+                label1.style.color = 'var(--danger)';
+                label2.innerHTML = '⚠️ Warning';
+                label2.style.color = 'var(--warning)';
+                label3.innerHTML = '✅ Safe';
+                label3.style.color = 'var(--success)';
+
+                input1.value = '1';
+                input2.value = '2';
+                input3.value = '4';
+            }
+        });
+
+        function renderSettings() {
+            const container = $('habitSettings');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            // Add "Create Custom Habit" button at the top
+            const createBtn = document.createElement('button');
+            createBtn.className = 'btn btn-success';
+            createBtn.textContent = '➕ CREATE CUSTOM HABIT';
+            createBtn.style.marginBottom = '20px';
+            createBtn.onclick = () => Modal.open('customHabit');
+            container.appendChild(createBtn);
+
+            const configDiv = document.createElement('div');
+            configDiv.className = 'habit-config';
+
+            Object.entries(State.data.habits).forEach(([key, habit]) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'habit-config-item';
+                itemDiv.dataset.habit = key;
+                itemDiv.style.display = 'flex';
+                itemDiv.style.flexDirection = 'column';
+                itemDiv.style.gap = '12px';
+                itemDiv.style.padding = '16px';
+                itemDiv.style.background = habit.enabled ? 'var(--card)' : 'var(--bg-light)';
+                itemDiv.style.border = `2px solid ${habit.enabled ? 'var(--primary)' : 'var(--border)'}`;
+                itemDiv.style.borderRadius = '12px';
+                itemDiv.style.transition = 'all 0.3s';
+
+                // Add colored left border accent for special habit types
+                if (habit.isPositive) {
+                    itemDiv.style.borderLeft = '4px solid var(--success)';
+                } else if (habit.trackingMode === 'money') {
+                    itemDiv.style.borderLeft = '4px solid var(--info)';
+                }
+
+                // Header row with checkbox and name
+                const headerDiv = document.createElement('div');
+                headerDiv.style.display = 'flex';
+                headerDiv.style.alignItems = 'center';
+                headerDiv.style.gap = '12px';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = habit.enabled;
+                checkbox.style.width = 'auto';
+                checkbox.style.margin = '0';
+                checkbox.style.cursor = 'pointer';
+                checkbox.id = `habit-enable-${key}`;
+
+                const label = document.createElement('label');
+                label.textContent = habit.name;
+                label.htmlFor = `habit-enable-${key}`;
+                label.style.margin = '0';
+                label.style.cursor = 'pointer';
+                label.style.fontSize = '18px';
+                label.style.fontWeight = '600';
+                label.style.flex = '1';
+
+                // Add custom badge if it's a custom habit
+                if (habit.isCustom) {
+                    const customBadge = document.createElement('span');
+                    customBadge.textContent = 'CUSTOM';
+                    customBadge.style.background = 'var(--warning)';
+                    customBadge.style.color = 'white';
+                    customBadge.style.padding = '2px 8px';
+                    customBadge.style.borderRadius = '4px';
+                    customBadge.style.fontSize = '10px';
+                    customBadge.style.fontWeight = 'bold';
+                    label.appendChild(document.createTextNode(' '));
+                    label.appendChild(customBadge);
+                }
+
+                checkbox.addEventListener('change', () => {
+                    itemDiv.style.background = checkbox.checked ? 'var(--card)' : 'var(--bg-light)';
+                    itemDiv.style.borderColor = checkbox.checked ? 'var(--primary)' : 'var(--border)';
+                });
+
+                headerDiv.appendChild(checkbox);
+                headerDiv.appendChild(label);
+
+                // Add delete button for custom habits
+                if (habit.isCustom) {
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = '🗑️';
+                    deleteBtn.style.background = 'var(--danger)';
+                    deleteBtn.style.color = 'white';
+                    deleteBtn.style.border = 'none';
+                    deleteBtn.style.padding = '6px 12px';
+                    deleteBtn.style.borderRadius = '6px';
+                    deleteBtn.style.cursor = 'pointer';
+                    deleteBtn.style.fontSize = '16px';
+                    deleteBtn.title = 'Delete custom habit';
+                    deleteBtn.onclick = () => {
+                        if (confirm(`Delete "${habit.name}"? This will also delete all logs for this habit.`)) {
+                            delete State.data.habits[key];
+                            delete State.data.habitLog[key];
+                            State.data.events = State.data.events.filter(e => e.habit !== key);
+                            State.save();
+                            UI.update();
+                            renderSettings();
+                            Utils.err('✅ Custom habit deleted');
+                        }
+                    };
+                    headerDiv.appendChild(deleteBtn);
+                }
+
+                // Thresholds section
+                const thresholdsContainer = document.createElement('div');
+                thresholdsContainer.style.display = 'flex';
+                thresholdsContainer.style.flexDirection = 'column';
+                thresholdsContainer.style.gap = '8px';
+                thresholdsContainer.style.paddingLeft = '32px';
+
+                const thresholdsLabel = document.createElement('div');
+                const thresholdUnit = habit.trackingMode === 'money' ? '($)' : '(hours)';
+                thresholdsLabel.textContent = habit.trackingMode === 'money' ? `💰 Money Thresholds ${thresholdUnit}:` : `⏱️ Time Thresholds ${thresholdUnit}:`;
+                thresholdsLabel.style.fontSize = '14px';
+                thresholdsLabel.style.color = 'var(--text-dim)';
+                thresholdsLabel.style.fontWeight = '600';
+
+                const thresholdsGrid = document.createElement('div');
+                thresholdsGrid.style.display = 'grid';
+                thresholdsGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                thresholdsGrid.style.gap = '8px';
+
+                const createThresholdInput = (value, label, color) => {
+                    const wrapper = document.createElement('div');
+                    wrapper.style.display = 'flex';
+                    wrapper.style.flexDirection = 'column';
+                    wrapper.style.gap = '4px';
+
+                    const inputLabel = document.createElement('label');
+                    inputLabel.textContent = label;
+                    inputLabel.style.fontSize = '12px';
+                    inputLabel.style.fontWeight = '600';
+                    inputLabel.style.color = color;
+
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.value = value;
+                    input.min = '0';
+                    input.max = '9999';
+                    input.style.width = '100%';
+                    input.style.margin = '0';
+                    input.style.padding = '8px';
+                    input.style.borderColor = color;
+
+                    wrapper.appendChild(inputLabel);
+                    wrapper.appendChild(input);
+                    return wrapper;
+                };
+
+                // For positive habits or money tracking, reverse the visual order
+                if (habit.isPositive || habit.trackingMode === 'money') {
+                    thresholdsGrid.appendChild(createThresholdInput(habit.thresholds[0], '✅ Safe', 'var(--success)'));
+                    thresholdsGrid.appendChild(createThresholdInput(habit.thresholds[1], '⚠️ Warning', 'var(--warning)'));
+                    thresholdsGrid.appendChild(createThresholdInput(habit.thresholds[2], '🔴 Danger', 'var(--danger)'));
+                } else {
+                    thresholdsGrid.appendChild(createThresholdInput(habit.thresholds[0], '🔴 Danger', 'var(--danger)'));
+                    thresholdsGrid.appendChild(createThresholdInput(habit.thresholds[1], '⚠️ Warning', 'var(--warning)'));
+                    thresholdsGrid.appendChild(createThresholdInput(habit.thresholds[2], '✅ Safe', 'var(--success)'));
+                }
+
+                thresholdsContainer.appendChild(thresholdsLabel);
+                thresholdsContainer.appendChild(thresholdsGrid);
+
+                itemDiv.appendChild(headerDiv);
+                itemDiv.appendChild(thresholdsContainer);
+
+                // Add editable options section (Notes and Spending toggles)
+                const optionsContainer = document.createElement('div');
+                optionsContainer.style.display = 'flex';
+                optionsContainer.style.gap = '12px';
+                optionsContainer.style.paddingLeft = '32px';
+                optionsContainer.style.marginTop = '8px';
+                optionsContainer.style.flexWrap = 'wrap';
+
+                // Notes toggle
+                const noteLabel = document.createElement('label');
+                noteLabel.style.display = 'flex';
+                noteLabel.style.alignItems = 'center';
+                noteLabel.style.gap = '6px';
+                noteLabel.style.cursor = 'pointer';
+                noteLabel.style.fontSize = '13px';
+
+                const noteCheckbox = document.createElement('input');
+                noteCheckbox.type = 'checkbox';
+                noteCheckbox.checked = habit.note || false;
+                noteCheckbox.style.width = 'auto';
+                noteCheckbox.style.margin = '0';
+                noteCheckbox.style.cursor = 'pointer';
+                noteCheckbox.addEventListener('change', () => {
+                    State.data.habits[key].note = noteCheckbox.checked;
+                    State.save();
+                    Utils.err(`✅ ${habit.name}: Notes ${noteCheckbox.checked ? 'enabled' : 'disabled'}`);
+                });
+
+                noteLabel.appendChild(noteCheckbox);
+                noteLabel.appendChild(document.createTextNode('📝 Ask for notes'));
+                optionsContainer.appendChild(noteLabel);
+
+                // Spending toggle (only for time-based habits)
+                if (habit.trackingMode !== 'money') {
+                    const spendingLabel = document.createElement('label');
+                    spendingLabel.style.display = 'flex';
+                    spendingLabel.style.alignItems = 'center';
+                    spendingLabel.style.gap = '6px';
+                    spendingLabel.style.cursor = 'pointer';
+                    spendingLabel.style.fontSize = '13px';
+
+                    const spendingCheckbox = document.createElement('input');
+                    spendingCheckbox.type = 'checkbox';
+                    spendingCheckbox.checked = habit.trackSpending || false;
+                    spendingCheckbox.style.width = 'auto';
+                    spendingCheckbox.style.margin = '0';
+                    spendingCheckbox.style.cursor = 'pointer';
+                    spendingCheckbox.addEventListener('change', () => {
+                        State.data.habits[key].trackSpending = spendingCheckbox.checked;
+                        State.save();
+                        Utils.err(`✅ ${habit.name}: Spending tracking ${spendingCheckbox.checked ? 'enabled' : 'disabled'}`);
+                    });
+
+                    spendingLabel.appendChild(spendingCheckbox);
+                    spendingLabel.appendChild(document.createTextNode('💵 Track spending'));
+                    optionsContainer.appendChild(spendingLabel);
+                }
+
+                itemDiv.appendChild(optionsContainer);
+
+                // Show habit type badges (only for tracking mode and positive habit)
+                const badgeContainer = document.createElement('div');
+                badgeContainer.style.display = 'flex';
+                badgeContainer.style.gap = '8px';
+                badgeContainer.style.paddingLeft = '32px';
+                badgeContainer.style.marginTop = '8px';
+
+                if (habit.trackingMode === 'money') {
+                    const badge = document.createElement('span');
+                    const periodLabel = habit.timePeriod === 'weekly' ? 'Weekly' :
+                        habit.timePeriod === 'monthly' ? 'Monthly' :
+                            `${habit.customDays} days`;
+                    badge.textContent = `💰 ${periodLabel}`;
+                    badge.style.background = 'var(--info)';
+                    badge.style.color = 'white';
+                    badge.style.padding = '4px 8px';
+                    badge.style.borderRadius = '4px';
+                    badge.style.fontSize = '11px';
+                    badge.style.fontWeight = 'bold';
+                    badgeContainer.appendChild(badge);
+                }
+
+                if (badgeContainer.children.length > 0) {
+                    itemDiv.appendChild(badgeContainer);
+                }
+
+                configDiv.appendChild(itemDiv);
+            });
+
+            container.appendChild(configDiv);
+
+            // Add explanation box
+            const explanationBox = document.createElement('div');
+            explanationBox.style.background = 'var(--bg-light)';
+            explanationBox.style.padding = '16px';
+            explanationBox.style.borderRadius = '12px';
+            explanationBox.style.marginTop = '20px';
+            explanationBox.style.border = '1px solid var(--border)';
+            explanationBox.innerHTML = `
+        <h3 style="margin:0 0 8px 0; color:var(--primary); font-size:15px;">💡 Thresholds explained:</h3>
+        <div style="color:var(--text-dim); font-size:13px; line-height:1.6;">
+            <strong style="color:var(--danger);">🔴 Danger</strong> < <strong style="color:var(--warning);">⚠️ Warning</strong> < <strong style="color:var(--success);">✅ Safe</strong>
+            <br>
+            <span style="opacity:0.8;">Example: [1, 2, 4] hours → Red if <1hr, Yellow if 1-2hr, Green if 2+ hr</span>
+        </div>
+    `;
+            container.appendChild(explanationBox);
+
+            // Add event listeners for spending toggles
+            document.querySelectorAll('[data-spending]').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const key = e.target.dataset.spending;
+                    State.data.habits[key].trackSpending = e.target.checked;
+                });
+            });
+
+            // Update sound settings UI
+            $('soundType').value = Sound.settings.type;
+            $('volumeSlider').value = Sound.settings.volume * 100;
+            $('volumeDisplay').textContent = Math.round(Sound.settings.volume * 100) + '%';
+            $('soundRepeat').value = Sound.settings.repeat;
+        }
+    </script>
+    <button id="installBtn" class="btn btn-primary"
+        style="display:none; position:fixed; right:16px; bottom:16px; z-index:1000;">Install App</button>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(console.error);
+            });
+        }
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const btn = document.getElementById('installBtn');
+            btn.style.display = 'inline-block';
+            btn.onclick = async () => {
+                btn.disabled = true;
+                await deferredPrompt.prompt();
+                await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                btn.style.display = 'none';
+            };
+        });
+        window.addEventListener('appinstalled', () => {
+            const btn = document.getElementById('installBtn');
+            if (btn) btn.style.display = 'none';
+        });
+    </script>
+</body>
+
+</html>
